@@ -2,11 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import Script from "next/script";
-import { useLanguage } from "@/lib/language-context";
 
 export function ElevenLabsWidget() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { language } = useLanguage();
 
   useEffect(() => {
     const checkAndCreate = () => {
@@ -14,7 +12,6 @@ export function ElevenLabsWidget() {
         containerRef.current.replaceChildren();
         const widget = document.createElement("elevenlabs-convai");
         widget.setAttribute("agent-id", "agent_0101m1y9kyggfb3a9fweqvb689sx");
-        widget.setAttribute("override-language", language);
         containerRef.current.appendChild(widget);
       }
     };
@@ -22,7 +19,7 @@ export function ElevenLabsWidget() {
     checkAndCreate();
     const timer = setTimeout(checkAndCreate, 2000);
     return () => clearTimeout(timer);
-  }, [language]);
+  }, []);
 
   return (
     <>
