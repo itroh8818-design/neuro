@@ -2,25 +2,27 @@
 
 import { useEffect, useRef } from "react";
 import Script from "next/script";
+import { useLanguage } from "@/lib/language-context";
 
 export function ElevenLabsWidget() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { language } = useLanguage();
 
   useEffect(() => {
-    // Wait for the script to load, then create the widget element
     const checkAndCreate = () => {
-      if (containerRef.current && !containerRef.current.querySelector("elevenlabs-convai")) {
+      if (containerRef.current) {
+        containerRef.current.replaceChildren();
         const widget = document.createElement("elevenlabs-convai");
         widget.setAttribute("agent-id", "agent_0101m1y9kyggfb3a9fweqvb689sx");
+        widget.setAttribute("override-language", language);
         containerRef.current.appendChild(widget);
       }
     };
 
-    // Try immediately and also after a delay
     checkAndCreate();
     const timer = setTimeout(checkAndCreate, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [language]);
 
   return (
     <>
