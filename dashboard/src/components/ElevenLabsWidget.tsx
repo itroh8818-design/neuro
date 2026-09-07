@@ -5,6 +5,12 @@ import Script from "next/script";
 import { useLanguage } from "@/lib/language-context";
 import { LANGUAGES } from "@/lib/translations";
 
+const languageNames = {
+  en: "English",
+  as: "Assamese",
+  mn: "Manipuri",
+} as const;
+
 export function ElevenLabsWidget() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { language, setLanguage } = useLanguage();
@@ -16,6 +22,10 @@ export function ElevenLabsWidget() {
         const widget = document.createElement("elevenlabs-convai");
         widget.setAttribute("agent-id", "agent_0101m1y9kyggfb3a9fweqvb689sx");
         widget.setAttribute("override-language", language);
+        widget.setAttribute(
+          "override-prompt",
+          `Respond only in ${languageNames[language]}. Do not use English or any other language unless the user explicitly asks you to translate.`,
+        );
         containerRef.current.appendChild(widget);
       }
     };
@@ -31,7 +41,7 @@ export function ElevenLabsWidget() {
         src="https://unpkg.com/@elevenlabs/convai-widget-embed"
         strategy="afterInteractive"
       />
-      <div className="fixed bottom-24 right-4 z-50 flex items-center gap-2 rounded-lg border border-border bg-white px-3 py-2 shadow-lg">
+      <div className="fixed right-4 top-20 z-50 flex items-center gap-2 rounded-lg border border-border bg-white px-3 py-2 shadow-lg">
         <label htmlFor="elevenlabs-language" className="text-sm font-medium text-foreground">
           Language
         </label>
