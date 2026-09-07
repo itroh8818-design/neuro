@@ -3,10 +3,11 @@
 import { useEffect, useRef } from "react";
 import Script from "next/script";
 import { useLanguage } from "@/lib/language-context";
+import { LANGUAGES } from "@/lib/translations";
 
 export function ElevenLabsWidget() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { language } = useLanguage();
+  const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
     const checkAndCreate = () => {
@@ -30,6 +31,23 @@ export function ElevenLabsWidget() {
         src="https://unpkg.com/@elevenlabs/convai-widget-embed"
         strategy="afterInteractive"
       />
+      <div className="fixed bottom-24 right-4 z-50 flex items-center gap-2 rounded-lg border border-border bg-white px-3 py-2 shadow-lg">
+        <label htmlFor="elevenlabs-language" className="text-sm font-medium text-foreground">
+          Language
+        </label>
+        <select
+          id="elevenlabs-language"
+          value={language}
+          onChange={(event) => setLanguage(event.target.value as typeof language)}
+          className="rounded-md border border-input bg-background px-2 py-1 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+        >
+          {LANGUAGES.map((option) => (
+            <option key={option.code} value={option.code}>
+              {option.nativeName} ({option.name})
+            </option>
+          ))}
+        </select>
+      </div>
       <div ref={containerRef} />
     </>
   );
