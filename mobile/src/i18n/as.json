@@ -1,0 +1,188 @@
+{
+  "app": {
+    "name": "NER কগনি কেয়াৰ",
+    "tagline": "আপোনাৰ মস্তিষ্ক স্বাস্থ্য সঙ্গী"
+  },
+  "onboarding": {
+    "welcome": "NER কগনি কেয়াৰত স্বাগতম",
+    "subtitle": "আপোনাৰ মনৰ এটা বন্ধুত্বপূর্ণ সঙ্গী",
+    "getStarted": "আৰম্ভ কৰক",
+    "chooseLanguage": "আপোনাৰ ভাষা বাছনি কৰক",
+    "next": "পৰৱৰ্তী",
+    "skip": "এৰি যাওক",
+    "done": "সম্পূৰ্ণ"
+  },
+  "home": {
+    "greeting": "নমস্কাৰ, {{name}}!",
+    "howAreYou": "আজি আপুনি কেনে অনুভৱ কৰিছে?",
+    "playGames": "খেল খেলক",
+    "myProgress": "মোৰ অগ্ৰগতি",
+    "reminders": "মনত কৰাই দিয়া",
+    "settings": "ছেটিংছ",
+    "voiceHelp": "কণ্ঠ সহায়",
+    "dailyStreak": "দৈনিক ধাৰা: {{count}} দিন",
+    "todayScore": "আজিৰ স্কোৰ: {{score}}"
+  },
+  "games": {
+    "title": "জ্ঞানিক খেল",
+    "memoryMatch": "মেমৰি মেচ",
+    "memoryMatchDesc": "আপোনাৰ স্মৃতি পৰীক্ষা কৰিবলৈ কাৰ্ড মিলাওক",
+    "patternRecognition": "পেটাৰ্ন চিনাক্তকৰণ",
+    "patternRecognitionDesc": "পেটাৰ্ন বিচাৰি আৰু শৃংখলা সম্পূৰ্ণ কৰক",
+    "dailyRoutine": "দৈনিক দিনচৰ্যা",
+    "dailyRoutineDesc": "আপোনাৰ দৈনিক কাৰ্য সঠিক ক্ৰমত সাজাওক",
+    "objectRecognition": "বস্তু চিনাক্তকৰণ",
+    "objectRecognitionDesc": "স্ক্ৰিনত দেখুওৱা বস্তু চিনাক্ত কৰক",
+    "attentionFocus": "মনোযোগ আৰু একাগ্ৰতা",
+    "attentionFocusDesc": "পাৰ্থক্য বিচাৰি আৰু মনোযোগী থাকক",
+    "emotionalEngagement": "আৱেগিক সম্পৃক্ততা",
+    "emotionalEngagementDesc": "আৱেগ মিলাওক আৰু অনুভৱ কৰক",
+    "score": "স্কোৰ: {{score}}",
+    "time": "সময়: {{time}}",
+    "level": "স্তৰ {{level}}",
+    "tryAgain": "পুনৰ চেষ্টা কৰক",
+    "greatJob": "বহু ভাল কাম! 🎉",
+    "keepTrying": "চেষ্টা অব্যাহত ৰাখক! 💪",
+    "yourScore": "আপোনাৰ স্কোৰ: {{score}}",
+    "playTime": "খেল সময়: {{minutes}} মিনিট",
+    "nextGame": "পৰৱৰ্তী খেল",
+    "backToGames": "খেললৈ উভতি যাওক",
+    "difficulty": {
+      "easy": "সহজ",
+      "medium": "মধ্যম",
+      "hard": "কঠিন"
+    }
+  },
+  "memoryMatch": {
+    "title": "মেমৰি মেচ",
+    "tapToFlip": "কাৰ্ড ওলোটাইবলৈ টেপ কৰক",
+    "matchPairs": "সকলো জুটি মিলাওক",
+    "foundMatch": "আপুনি এটা মিল পোৱাৰ! 🎉",
+    "noMatch": "পুনৰ চেষ্টা কৰক! এইটো মিল নাই।",
+    "cards": "কাৰ্ড"
+  },
+  "pattern": {
+    "title": "পেটাৰ্ন চিনাক্তকৰণ",
+    "whatComesNext": "পিছত কি আহিব?",
+    "selectAnswer": "সঠিক উত্তৰ টেপ কৰক",
+    "correctPattern": "সঠিক পেটাৰ্ন! বাঢ়ি কাম!",
+    "wrongPattern": "নহয়। পুনৰ চেষ্টা কৰক!"
+  },
+  "dailyRoutine": {
+    "title": "দৈনিক দিনচৰ্যা",
+    "orderActivities": "এই কাৰ্যবোৰ সঠিক ক্ৰমত সাজাওক",
+    "dragToReorder": "পুনৰ সাজাবলৈ টেনি আনক",
+    "correctOrder": "পৰিপূৰ্ণ ক্ৰম! আপুনি মনত কৰি পেলাইছে!",
+    "wrongOrder": "ঠিক নহয়। পুনৰ চেষ্টা কৰক!"
+  },
+  "objectRecognition": {
+    "title": "বস্তু চিনাক্তকৰণ",
+    "whatIsThis": "এইটো কি?",
+    "selectObject": "সঠিক উত্তৰ টেপ কৰক",
+    "correctObject": "ঠিক! বহু ভাল স্মৃতি!",
+    "wrongObject": "সেইটো নহয়। পুনৰ চেষ্টা কৰক!"
+  },
+  "attention": {
+    "title": "মনোযোগ আৰু একাগ্ৰতা",
+    "findDifference": "পাৰ্থক্য বিচাৰি উলাওক!",
+    "tapTheDifferent": "যিটো বেলেগ সেইটো টেপ কৰক",
+    "correctTap": "দারুণ মনোযোগ! 🎯",
+    "wrongTap": "সেইটো নহয়। মনোযোগী হৈ চাওক!"
+  },
+  "emotional": {
+    "title": "আৱেগিক সম্পৃক্ততা",
+    "howDoTheyFeel": "এই ব্যক্তিজন কেনে অনুভৱ কৰিছে?",
+    "matchEmotion": "ছবিত আৱেগ মিলাওক",
+    "correctEmotion": "আপুনি অনুভৱ বুজিছে! ❤️",
+    "wrongEmotion": "নহয়। অনুষ্ঠানৰ দিকত চাওক।"
+  },
+  "reminders": {
+    "title": "মনত কৰাই দিয়া",
+    "medicine": "ওষুধ",
+    "hydration": "পানী",
+    "dailyActivity": "দৈনিক কাৰ্য",
+    "appointment": "সাক্ষাৎ",
+    "addReminder": "মনত কৰাই দিয়া যোগ কৰক",
+    "noReminders": "কোনো মনত কৰাই দিয়া নাই",
+    "timeFor": "{{activity}}ৰ সময় হ'ল!",
+    "dismiss": "বাদ দিয়ক",
+    "snooze": "১০ মিনিট পিছত",
+    "taken": "সম্পূৰ্ণ ✓",
+    "everyDay": "প্ৰতিদিন",
+    "weekly": "সাপ্তাহিক",
+    "custom": "কাষ্টম",
+    "setTime": "সময় নিৰ্ধাৰণ কৰক",
+    "chooseActivity": "কাৰ্য বাছনি কৰক",
+    "medicineReminders": "ওষুধৰ মনত কৰাই দিয়া",
+    "hydrationReminders": "পানীৰ মনত কৰাই দিয়া",
+    "activityReminders": "কাৰ্যৰ মনত কৰাই দিয়া",
+    "appointmentReminders": "সাক্ষাৎৰ মনত কৰাই দিয়া",
+    "drinkWater": "পানী খাওৰ সময় হ'ল! 💧",
+    "takeMedicine": "ওষুধ খাওৰ সময় হ'ল! 💊",
+    "dailyActivityTime": "দৈনিক কাৰ্যৰ সময় হ'ল! 🌅",
+    "appointmentSoon": "আপোনাৰ সাক্ষাৎ আহি আছে! 📅"
+  },
+  "progress": {
+    "title": "মোৰ অগ্ৰগতি",
+    "overallScore": "সামগ্ৰিক স্কোৰ",
+    "weeklyProgress": "সাপ্তাহিক অগ্ৰগতি",
+    "gamesPlayed": "খেল খেলা হৈছে: {{count}}",
+    "totalPlayTime": "মুঠ খেল সময়: {{hours}} ঘণ্টা",
+    "bestStreak": "শ্ৰেষ্ঠ ধাৰা: {{count}} দিন",
+    "cognitiveScore": "জ্ঞানিক স্কোৰ",
+    "memoryScore": "স্মৃতি",
+    "attentionScore": "মনোযোগ",
+    "patternScore": "পেটাৰ্ন",
+    "routineScore": "দিনচৰ্যা",
+    "noData": "আপোনাৰ অগ্ৰগতি চাবলৈ কিছু খেল খেলক!"
+  },
+  "settings": {
+    "title": "ছেটিংছ",
+    "language": "ভাষা",
+    "fontSize": "ফন্ট আকাৰ",
+    "highContrast": "উচ্চ বৈসাদৃশ্য মোড",
+    "voiceEnabled": "কণ্ঠ সহায়",
+    "notifications": "জাননী",
+    "soundEffects": "শব্দ প্ৰভাৱ",
+    "profile": "মোৰ প্ৰ'ফাইল",
+    "about": "NER কগনি কেয়াৰ বিষয়ে",
+    "privacy": "গোপনীয়তা নীতি",
+    "logout": "লগ আউট",
+    "small": "সৰু",
+    "medium": "মধ্যম",
+    "large": "ডাঙৰ",
+    "extraLarge": "বহু ডাঙৰ"
+  },
+  "voice": {
+    "listening": "শুনি আছো...",
+    "sayCommand": "এটা নিৰ্দেশনা ক'ওক",
+    "commands": {
+      "help": "সহায়",
+      "next": "পৰৱৰ্তী",
+      "back": "পিছলৈ",
+      "play": "খেলক",
+      "easier": "সহজ কৰক",
+      "harder": "কঠিন কৰক",
+      "repeat": "পুনৰাবৃত্তি",
+      "stop": "বন্ধ কৰক"
+    },
+    "couldNotUnderstand": "দুঃখিত, মই বুজিব নপৰিলোঁ। পুনৰ চেষ্টা কৰক।",
+    "voiceNotAvailable": "কণ্ঠ সহায় এতিয়া উপলব্ধ নাই।"
+  },
+  "common": {
+    "loading": "ল'ড হৈ আছে...",
+    "error": "কিবা ভুল হৈছে",
+    "retry": "পুনৰ চেষ্টা কৰক",
+    "cancel": "বাতিল",
+    "confirm": "নিশ্চিত",
+    "save": "সংৰক্ষণ কৰক",
+    "delete": "মচি পেলাওক",
+    "edit": "সম্পাদনা",
+    "back": "পিছলৈ",
+    "yes": "হয়",
+    "no": "নহয়",
+    "ok": "ঠিক আছে",
+    "close": "বন্ধ কৰক",
+    "welcomeBack": "পুনৰায় স্বাগতম!"
+  }
+}

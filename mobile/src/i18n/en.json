@@ -1,0 +1,188 @@
+{
+  "app": {
+    "name": "NER NeuroSmriti",
+    "tagline": "Your Cognitive Wellness Companion"
+  },
+  "onboarding": {
+    "welcome": "Welcome to NER NeuroSmriti",
+    "subtitle": "A friendly companion for your mind",
+    "getStarted": "Get Started",
+    "chooseLanguage": "Choose Your Language",
+    "next": "Next",
+    "skip": "Skip",
+    "done": "Done"
+  },
+  "home": {
+    "greeting": "Hello, {{name}}!",
+    "howAreYou": "How are you feeling today?",
+    "playGames": "Play Games",
+    "myProgress": "My Progress",
+    "reminders": "Reminders",
+    "settings": "Settings",
+    "voiceHelp": "Voice Help",
+    "dailyStreak": "Daily Streak: {{count}} days",
+    "todayScore": "Today's Score: {{score}}"
+  },
+  "games": {
+    "title": "Cognitive Games",
+    "memoryMatch": "Memory Match",
+    "memoryMatchDesc": "Match the cards to test your memory",
+    "patternRecognition": "Pattern Recognition",
+    "patternRecognitionDesc": "Find the pattern and complete the sequence",
+    "dailyRoutine": "Daily Routine",
+    "dailyRoutineDesc": "Arrange your daily activities in order",
+    "objectRecognition": "Object Recognition",
+    "objectRecognitionDesc": "Identify the objects shown on screen",
+    "attentionFocus": "Attention & Focus",
+    "attentionFocusDesc": "Find the differences and stay focused",
+    "emotionalEngagement": "Emotional Engagement",
+    "emotionalEngagementDesc": "Match emotions and feel the feelings",
+    "score": "Score: {{score}}",
+    "time": "Time: {{time}}",
+    "level": "Level {{level}}",
+    "tryAgain": "Try Again",
+    "greatJob": "Great Job! 🎉",
+    "keepTrying": "Keep Trying! 💪",
+    "yourScore": "Your Score: {{score}}",
+    "playTime": "Play Time: {{minutes}} minutes",
+    "nextGame": "Next Game",
+    "backToGames": "Back to Games",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    }
+  },
+  "memoryMatch": {
+    "title": "Memory Match",
+    "tapToFlip": "Tap a card to flip it",
+    "matchPairs": "Match all the pairs",
+    "foundMatch": "You found a match! 🎉",
+    "noMatch": "Try again! These don't match.",
+    "cards": "cards"
+  },
+  "pattern": {
+    "title": "Pattern Recognition",
+    "whatComesNext": "What comes next?",
+    "selectAnswer": "Tap the correct answer",
+    "correctPattern": "Correct pattern! Well done!",
+    "wrongPattern": "Not quite. Try again!"
+  },
+  "dailyRoutine": {
+    "title": "Daily Routine",
+    "orderActivities": "Put these activities in the right order",
+    "dragToReorder": "Drag to reorder",
+    "correctOrder": "Perfect order! You remembered well!",
+    "wrongOrder": "Not quite right. Try again!"
+  },
+  "objectRecognition": {
+    "title": "Object Recognition",
+    "whatIsThis": "What is this?",
+    "selectObject": "Tap the correct answer",
+    "correctObject": "That's right! Great memory!",
+    "wrongObject": "Not that one. Try again!"
+  },
+  "attention": {
+    "title": "Attention & Focus",
+    "findDifference": "Find the difference!",
+    "tapTheDifferent": "Tap the one that's different",
+    "correctTap": "Excellent focus! 🎯",
+    "wrongTap": "That's not the one. Look carefully!"
+  },
+  "emotional": {
+    "title": "Emotional Engagement",
+    "howDoTheyFeel": "How does this person feel?",
+    "matchEmotion": "Match the emotion to the picture",
+    "correctEmotion": "You understood the feeling! ❤️",
+    "wrongEmotion": "Not quite. Think about the expression."
+  },
+  "reminders": {
+    "title": "Reminders",
+    "medicine": "Medicine",
+    "hydration": "Hydration",
+    "dailyActivity": "Daily Activity",
+    "appointment": "Appointment",
+    "addReminder": "Add Reminder",
+    "noReminders": "No reminders set",
+    "timeFor": "It's time for {{activity}}!",
+    "dismiss": "Dismiss",
+    "snooze": "Snooze (10 min)",
+    "taken": "Done ✓",
+    "everyDay": "Every Day",
+    "weekly": "Weekly",
+    "custom": "Custom",
+    "setTime": "Set Time",
+    "chooseActivity": "Choose Activity",
+    "medicineReminders": "Medicine Reminders",
+    "hydrationReminders": "Hydration Reminders",
+    "activityReminders": "Activity Reminders",
+    "appointmentReminders": "Appointment Reminders",
+    "drinkWater": "Time to drink water! 💧",
+    "takeMedicine": "Time to take your medicine! 💊",
+    "dailyActivityTime": "Time for your daily activity! 🌅",
+    "appointmentSoon": "You have an appointment soon! 📅"
+  },
+  "progress": {
+    "title": "My Progress",
+    "overallScore": "Overall Score",
+    "weeklyProgress": "Weekly Progress",
+    "gamesPlayed": "Games Played: {{count}}",
+    "totalPlayTime": "Total Play Time: {{hours}} hours",
+    "bestStreak": "Best Streak: {{count}} days",
+    "cognitiveScore": "Cognitive Score",
+    "memoryScore": "Memory",
+    "attentionScore": "Attention",
+    "patternScore": "Pattern",
+    "routineScore": "Routine",
+    "noData": "Play some games to see your progress!"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "fontSize": "Font Size",
+    "highContrast": "High Contrast Mode",
+    "voiceEnabled": "Voice Assistance",
+    "notifications": "Notifications",
+    "soundEffects": "Sound Effects",
+    "profile": "My Profile",
+    "about": "About NER NeuroSmriti",
+    "privacy": "Privacy Policy",
+    "logout": "Logout",
+    "small": "Small",
+    "medium": "Medium",
+    "large": "Large",
+    "extraLarge": "Extra Large"
+  },
+  "voice": {
+    "listening": "Listening...",
+    "sayCommand": "Say a command",
+    "commands": {
+      "help": "Help",
+      "next": "Next",
+      "back": "Go Back",
+      "play": "Play",
+      "easier": "Make it Easier",
+      "harder": "Make it Harder",
+      "repeat": "Repeat",
+      "stop": "Stop"
+    },
+    "couldNotUnderstand": "Sorry, I didn't understand. Please try again.",
+    "voiceNotAvailable": "Voice assistance is not available right now."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "close": "Close",
+    "welcomeBack": "Welcome back!"
+  }
+}

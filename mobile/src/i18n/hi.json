@@ -1,0 +1,188 @@
+{
+  "app": {
+    "name": "NER कॉग्नी केयर",
+    "tagline": "आपके मानसिक स्वास्थ्य का साथी"
+  },
+  "onboarding": {
+    "welcome": "NER कॉग्नी केयर में आपका स्वागत है",
+    "subtitle": "आपके मन का एक दोस्ताना साथी",
+    "getStarted": "शुरू करें",
+    "chooseLanguage": "अपनी भाषा चुनें",
+    "next": "अगला",
+    "skip": "छोड़ें",
+    "done": "हो गया"
+  },
+  "home": {
+    "greeting": "नमस्ते, {{name}}!",
+    "howAreYou": "आज आप कैसा महसूस कर रहे हैं?",
+    "playGames": "खेल खेलें",
+    "myProgress": "मेरी प्रगति",
+    "reminders": "रिमाइंडर",
+    "settings": "सेटिंग्स",
+    "voiceHelp": "वॉयस हेल्प",
+    "dailyStreak": "दैनिक स्ट्रीक: {{count}} दिन",
+    "todayScore": "आज का स्कोर: {{score}}"
+  },
+  "games": {
+    "title": "संज्ञानात्मक खेल",
+    "memoryMatch": "मेमोरी मैच",
+    "memoryMatchDesc": "अपनी याददाश्त परखने के लिए कार्ड मिलाएं",
+    "patternRecognition": "पैटर्न पहचान",
+    "patternRecognitionDesc": "पैटर्न ढूंढें और क्रम पूरा करें",
+    "dailyRoutine": "दैनिक दिनचर्या",
+    "dailyRoutineDesc": "अपनी दैनिक गतिविधियों को सही क्रम में लगाएं",
+    "objectRecognition": "वस्तु पहचान",
+    "objectRecognitionDesc": "स्क्रीन पर दिखाई देने वाली वस्तुओं को पहचानें",
+    "attentionFocus": "ध्यान और एकाग्रता",
+    "attentionFocusDesc": "अंतर ढूंढें और ध्यान केंद्रित रखें",
+    "emotionalEngagement": "भावनात्मक जुड़ाव",
+    "emotionalEngagementDesc": "भावनाओं को मिलाएं और महसूस करें",
+    "score": "स्कोर: {{score}}",
+    "time": "समय: {{time}}",
+    "level": "स्तर {{level}}",
+    "tryAgain": "फिर से कोशिश करें",
+    "greatJob": "बहुत अच्छा! 🎉",
+    "keepTrying": "कोशिश जारी रखें! 💪",
+    "yourScore": "आपका स्कोर: {{score}}",
+    "playTime": "खेल का समय: {{minutes}} मिनट",
+    "nextGame": "अगला खेल",
+    "backToGames": "खेलों में वापस",
+    "difficulty": {
+      "easy": "आसान",
+      "medium": "मध्यम",
+      "hard": "कठिन"
+    }
+  },
+  "memoryMatch": {
+    "title": "मेमोरी मैच",
+    "tapToFlip": "कार्ड पलटने के लिए टैप करें",
+    "matchPairs": "सभी जोड़े मिलाएं",
+    "foundMatch": "आपने मैच मिला! 🎉",
+    "noMatch": "फिर से कोशिश करें! ये मैच नहीं हैं।",
+    "cards": "कार्ड"
+  },
+  "pattern": {
+    "title": "पैटर्न पहचान",
+    "whatComesNext": "अगला क्या आएगा?",
+    "selectAnswer": "सही उत्तर टैप करें",
+    "correctPattern": "सही पैटर्न! बहुत अच्छे!",
+    "wrongPattern": "नहीं है। फिर से कोशिश करें!"
+  },
+  "dailyRoutine": {
+    "title": "दैनिक दिनचर्या",
+    "orderActivities": "इन गतिविधियों को सही क्रम में लगाएं",
+    "dragToReorder": "दोबारा लगाने के लिए खींचें",
+    "correctOrder": "बिल्कुल सही क्रम! आपने याद रखा!",
+    "wrongOrder": "सही नहीं है। फिर से कोशिश करें!"
+  },
+  "objectRecognition": {
+    "title": "वस्तु पहचान",
+    "whatIsThis": "यह क्या है?",
+    "selectObject": "सही उत्तर टैप करें",
+    "correctObject": "बिल्कुल सही! बहुत अच्छी याददाश्त!",
+    "wrongObject": "वो नहीं है। फिर से कोशिश करें!"
+  },
+  "attention": {
+    "title": "ध्यान और एकाग्रता",
+    "findDifference": "अंतर ढूंढें!",
+    "tapTheDifferent": "जो अलग है उसे टैप करें",
+    "correctTap": "शानदार ध्यान! 🎯",
+    "wrongTap": "वो नहीं है। ध्यान से देखें!"
+  },
+  "emotional": {
+    "title": "भावनात्मक जुड़ाव",
+    "howDoTheyFeel": "यह व्यक्ति कैसा महसूस कर रहा है?",
+    "matchEmotion": "तस्वीर में भावना मिलाएं",
+    "correctEmotion": "आपने भावना समझी! ❤️",
+    "wrongEmotion": "नहीं है। अभिव्यक्ति पर ध्यान दें।"
+  },
+  "reminders": {
+    "title": "रिमाइंडर",
+    "medicine": "दवाई",
+    "hydration": "पानी",
+    "dailyActivity": "दैनिक गतिविधि",
+    "appointment": "अपॉइंटमेंट",
+    "addReminder": "रिमाइंडर जोड़ें",
+    "noReminders": "कोई रिमाइंडर नहीं",
+    "timeFor": "{{activity}} का समय है!",
+    "dismiss": "हटाएं",
+    "snooze": "10 मिनट बाद",
+    "taken": "हो गया ✓",
+    "everyDay": "हर दिन",
+    "weekly": "साप्ताहिक",
+    "custom": "कस्टम",
+    "setTime": "समय तय करें",
+    "chooseActivity": "गतिविधि चुनें",
+    "medicineReminders": "दवाई रिमाइंडर",
+    "hydrationReminders": "पानी रिमाइंडर",
+    "activityReminders": "गतिविधि रिमाइंडर",
+    "appointmentReminders": "अपॉइंटमेंट रिमाइंडर",
+    "drinkWater": "पानी पीने का समय है! 💧",
+    "takeMedicine": "दवाई लेने का समय है! 💊",
+    "dailyActivityTime": "दैनिक गतिविधि का समय है! 🌅",
+    "appointmentSoon": "जल्द ही आपका अपॉइंटमेंट है! 📅"
+  },
+  "progress": {
+    "title": "मेरी प्रगति",
+    "overallScore": "कुल स्कोर",
+    "weeklyProgress": "साप्ताहिक प्रगति",
+    "gamesPlayed": "खेल खेले: {{count}}",
+    "totalPlayTime": "कुल खेल का समय: {{hours}} घंटे",
+    "bestStreak": "सर्वश्रेष्ठ स्ट्रीक: {{count}} दिन",
+    "cognitiveScore": "संज्ञानात्मक स्कोर",
+    "memoryScore": "याददाश्त",
+    "attentionScore": "ध्यान",
+    "patternScore": "पैटर्न",
+    "routineScore": "दिनचर्या",
+    "noData": "अपनी प्रगति देखने के लिए कुछ खेल खेलें!"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "language": "भाषा",
+    "fontSize": "फॉन्ट साइज",
+    "highContrast": "हाई कंट्रास्ट मोड",
+    "voiceEnabled": "वॉयस सहायता",
+    "notifications": "सूचनाएं",
+    "soundEffects": "ध्वनि प्रभाव",
+    "profile": "मेरी प्रोफाइल",
+    "about": "NER कॉग्नी केयर के बारे में",
+    "privacy": "गोपनीयता नीति",
+    "logout": "लॉग आउट",
+    "small": "छोटा",
+    "medium": "मध्यम",
+    "large": "बड़ा",
+    "extraLarge": "बहुत बड़ा"
+  },
+  "voice": {
+    "listening": "सुन रहे हैं...",
+    "sayCommand": "एक निर्देश बोलें",
+    "commands": {
+      "help": "मदद",
+      "next": "अगला",
+      "back": "पीछे",
+      "play": "खेलें",
+      "easier": "आसान करें",
+      "harder": "कठिन करें",
+      "repeat": "फिर से",
+      "stop": "रुकें"
+    },
+    "couldNotUnderstand": "माफ़ करें, मैं समझ नहीं पाया। कृपया फिर से कोशिश करें।",
+    "voiceNotAvailable": "वॉयस सहायता अभी उपलब्ध नहीं है।"
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "कुछ गड़बड़ हो गई",
+    "retry": "फिर से कोशिश करें",
+    "cancel": "रद्द करें",
+    "confirm": "पुष्टि करें",
+    "save": "सहेजें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "back": "पीछे",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "ok": "ठीक है",
+    "close": "बंद करें",
+    "welcomeBack": "वापस स्वागत है!"
+  }
+}
