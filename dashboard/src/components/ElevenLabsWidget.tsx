@@ -11,7 +11,7 @@ export function ElevenLabsWidget() {
     const checkAndCreate = () => {
       if (containerRef.current && !containerRef.current.querySelector("elevenlabs-convai")) {
         const widget = document.createElement("elevenlabs-convai");
-        widget.setAttribute("agent-id", "agent_9001m1p1ymvdfrv8x6v6cvzp0bpp");
+        widget.setAttribute("agent-id", "agent_0101m1y9kyggfb3a9fweqvb689sx");
         containerRef.current.appendChild(widget);
       }
     };
