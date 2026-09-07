@@ -5,12 +5,6 @@ import Script from "next/script";
 import { useLanguage } from "@/lib/language-context";
 import { LANGUAGES } from "@/lib/translations";
 
-const languageNames = {
-  en: "English",
-  as: "Assamese",
-  mn: "Manipuri",
-} as const;
-
 export function ElevenLabsWidget() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { language, setLanguage } = useLanguage();
@@ -22,10 +16,6 @@ export function ElevenLabsWidget() {
         const widget = document.createElement("elevenlabs-convai");
         widget.setAttribute("agent-id", "agent_0101m1y9kyggfb3a9fweqvb689sx");
         widget.setAttribute("override-language", language);
-        widget.setAttribute(
-          "override-prompt",
-          `Respond only in ${languageNames[language]}. Do not use English or any other language unless the user explicitly asks you to translate.`,
-        );
         containerRef.current.appendChild(widget);
       }
     };
