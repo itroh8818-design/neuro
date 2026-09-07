@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<title>NER NeuroSmriti — Full App</title>
+<style>
+:root {
+  --primary: #1B4332;
+  --primary-light: #2D6A4F;
+  --primary-dark: #0B2618;
+  --accent: #C7923E;
+  --accent-light: #D4A960;
+  --bg: #EDE8E0;
+  --card: #F5F1EB;
+  --text: #1A1614;
+  --text-light: #6B5A45;
+  --danger: #A63D2F;
+  --warning: #C7923E;
+  --info: #5B7B8A;
+  --success: #2D6A4F;
+  --border: #D5CFC5;
+  --shadow: 0 4px 20px rgba(26,22,20,0.08);
+  --radius: 16px;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+*:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+body { font-family: 'Atkinson Hyperlegible', 'Outfit', -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; width: 100vw; }
+button { cursor: pointer; border: none; font-family: inherit; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.screen { position: absolute; top:0; left:0; width:100%; height:100%; display:none; flex-direction:column; overflow-y:auto; }
+.screen.active { display:flex; }
+
+/* ONBOARDING */
+.onboarding { background: linear-gradient(160deg, #0B2618 0%, #1B4332 40%, #2D6A4F 80%, #3A7D5C 100%); color: white; justify-content: center; align-items: center; padding: 30px; text-align: center; position: relative; overflow: hidden; }
+.onboarding::before { content: ''; position: absolute; top: -40%; right: -20%; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(199,146,62,0.15) 0%, transparent 70%); pointer-events: none; }
+.onboarding::after { content: ''; position: absolute; bottom: -30%; left: -10%; width: 250px; height: 250px; border-radius: 50%; background: radial-gradient(circle, rgba(199,146,62,0.1) 0%, transparent 70%); pointer-events: none; }
+.onboarding h1 { font-size: 36px; margin-bottom: 8px; }
+.onboarding .subtitle { font-size: 18px; opacity: 0.9; margin-bottom: 40px; }
+.onboarding .brain-icon { font-size: 80px; margin-bottom: 20px; }
+.onboarding .lang-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; width: 100%; max-width: 360px; margin-bottom: 30px; }
+.lang-btn { background: rgba(255,255,255,0.2); color: white; border: 3px solid rgba(255,255,255,0.4); border-radius: 12px; padding: 16px 8px; font-size: 16px; font-weight: 600; transition: all 0.2s; min-height: 48px; }
+.lang-btn.selected { background: white; color: var(--primary-dark); border-color: white; transform: scale(1.05); }
+.onboarding .start-btn { background: white; color: var(--primary-dark); font-size: 22px; font-weight: 700; padding: 18px 60px; border-radius: 50px; margin-top: 10px; transition: transform 0.2s; }
+.onboarding .start-btn:active { transform: scale(0.95); }
+.onboarding .mdoner { margin-top: 30px; font-size: 13px; opacity: 0.7; }
+
+/* PROFILE SETUP */
+.profile-setup { background: var(--bg); padding: 30px 20px; align-items: center; justify-content: center; }
+.profile-setup h2 { font-size: 28px; color: var(--primary-dark); margin-bottom: 8px; }
+.profile-setup p { font-size: 16px; color: var(--text-light); margin-bottom: 30px; }
+.profile-form { width: 100%; max-width: 380px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+.form-group input, .form-group select { width: 100%; padding: 16px; font-size: 18px; border: 2px solid var(--border); border-radius: 12px; background: white; }
+.form-group input:focus, .form-group select:focus { border-color: var(--primary); outline: none; }
+
+/* BOTTOM NAV */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 2px solid var(--border); z-index: 100; height: 70px; }
+.nav-item { flex:1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; color: var(--text-light); padding: 10px 0; transition: color 0.2s; min-height: 48px; background: none; }
+.nav-item.active { color: var(--primary); font-weight: 700; }
+.nav-item .nav-icon { font-size: 24px; margin-bottom: 4px; }
+
+/* HOME SCREEN */
+.home { background: var(--bg); padding-bottom: 80px; }
+.home-header { background: linear-gradient(160deg, #0B2618 0%, #1B4332 60%, #2D6A4F 100%); color: white; padding: 20px; padding-top: 50px; position: relative; overflow: hidden; }
+.home-header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-light), var(--accent)); opacity: 0.6; }
+.home-header .greeting { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+.home-header .date-text { font-size: 15px; opacity: 0.85; margin-top: 4px; }
+.home-header .stats-row { display: flex; gap: 10px; margin-top: 16px; }
+.home-header .stat-badge { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 14px; font-size: 13px; flex:1; text-align: center; backdrop-filter: blur(4px); }
+.home-header .stat-badge strong { display: block; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.section-title { font-size: 18px; font-weight: 700; padding: 24px 20px 12px; letter-spacing: -0.3px; color: var(--text); }
+.games-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 0 20px; }
+.game-card { background: var(--card); border-radius: var(--radius); padding: 24px 16px; text-align: center; box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; border: 1.5px solid var(--border); min-height: 44px; }
+.game-card:active { box-shadow: 0 2px 8px rgba(26,22,20,0.12); }
+.game-card:active { transform: scale(0.96); }
+.game-card .game-icon { font-size: 44px; margin-bottom: 8px; }
+.game-card .game-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.game-card .game-desc { font-size: 13px; color: var(--text-light); }
+.game-card .game-level { display: inline-block; margin-top: 8px; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+.game-card .game-level.l1 { background: #E8F5E9; color: #2E7D32; }
+.game-card .game-level.l2 { background: #FFF3E0; color: #E65100; }
+.game-card .game-level.l3 { background: #E3F2FD; color: #1565C0; }
+.game-card .game-level.l4 { background: #FCE4EC; color: #C62828; }
+.game-card .game-level.l5 { background: #F3E5F5; color: #7B1FA2; }
+.reminder-bar { margin: 16px 20px; background: linear-gradient(135deg, #FDF6EC, #F5EBDA); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 14px; border: 1.5px solid var(--accent); border-left: 5px solid var(--accent); }
+.reminder-bar .r-icon { font-size: 36px; }
+.reminder-bar .r-text h3 { font-size: 16px; font-weight: 700; color: var(--primary-dark); }
+.reminder-bar .r-text p { font-size: 13px; color: var(--text-light); }
+.quick-actions { display: flex; gap: 12px; padding: 0 20px; margin-top: 16px; }
+.quick-action { flex: 1; background: white; border-radius: 14px; padding: 16px; text-align: center; box-shadow: var(--shadow); }
+.quick-action .qa-icon { font-size: 28px; margin-bottom: 4px; }
+.quick-action .qa-text { font-size: 13px; font-weight: 600; color: var(--text); }
+
+/* GAME PLAY SCREEN */
+.gameplay { background: var(--bg); }
+.game-header { background: linear-gradient(160deg, #0B2618, #1B4332); color: white; padding: 16px 20px; padding-top: 44px; display: flex; align-items: center; gap: 14px; }
+.game-header .back-btn { font-size: 16px; background: rgba(255,255,255,0.2); color: white; border-radius: 8px; padding: 6px 12px; font-weight: 600; }
+.game-header .game-title { font-size: 22px; font-weight: 700; flex:1; }
+.game-header .score-display { font-size: 18px; font-weight: 700; background: rgba(199,146,62,0.25); border: 1px solid rgba(199,146,62,0.3); padding: 8px 16px; border-radius: 20px; letter-spacing: -0.3px; }
+.game-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 30px; }
+.timer-bar { height: 6px; background: var(--border); border-radius: 3px; margin: 0 20px 16px; overflow: hidden; }
+.timer-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width 1s linear; }
+.instruction-text { font-size: 20px; font-weight: 600; text-align: center; margin-bottom: 20px; color: var(--text); }
+
+/* MEMORY MATCH GAME */
+.memory-grid { display: grid; gap: 10px; justify-content: center; margin: 0 auto; }
+.memory-card { aspect-ratio: 1; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 36px; background: linear-gradient(145deg, #1B4332, #2D6A4F); color: white; cursor: pointer; transition: transform 0.3s; user-select: none; border: 2px solid rgba(255,255,255,0.1); }
+.memory-card.flipped { background: white; border-color: var(--primary); }
+.memory-card.matched { background: #E8F5E9; border-color: var(--success); animation: matchPop 0.4s; }
+.memory-card .card-back { font-size: 28px; }
+@keyframes matchPop { 0%{transform:scale(1)} 50%{transform:scale(1.1)} 100%{transform:scale(1)} }
+
+/* PATTERN RECOGNITION */
+.pattern-container { text-align: center; }
+.pattern-sequence { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+.pattern-dot { width: 50px; height: 50px; border-radius: 50%; background: var(--border); border: 3px solid #BDBDBD; transition: all 0.3s; }
+.pattern-dot.active { background: var(--accent); border-color: var(--accent); transform: scale(1.2); }
+.pattern-dot.correct { background: var(--success); border-color: var(--success); }
+.pattern-dot.wrong { background: var(--danger); border-color: var(--danger); }
+.pattern-input { display: grid; grid-template-columns: repeat(3, 80px); gap: 12px; justify-content: center; margin-top: 20px; }
+.pattern-btn { width: 80px; height: 80px; border-radius: 50%; font-size: 28px; font-weight: 700; color: white; transition: transform 0.15s; }
+.pattern-btn:active { transform: scale(0.9); }
+.pattern-btn.red { background: #E53935; }
+.pattern-btn.blue { background: #1E88E5; }
+.pattern-btn.green { background: #43A047; }
+.pattern-btn.yellow { background: #FDD835; color: #333; }
+.pattern-btn.purple { background: #8E24AA; }
+.pattern-btn.orange { background: #FB8C00; }
+.pattern-status { font-size: 18px; font-weight: 600; margin-top: 16px; min-height: 30px; }
+
+/* DAILY ROUTINE */
+.routine-list { display: flex; flex-direction: column; gap: 10px; }
+.routine-item { background: white; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: grab; border: 2px solid transparent; transition: all 0.2s; }
+.routine-item.dragging { opacity: 0.5; border-color: var(--primary); }
+.routine-item.selected { border-color: var(--primary); background: #E8F5E9; }
+.routine-item .r-num { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
+.routine-item .r-emoji { font-size: 28px; }
+.routine-item .r-info h4 { font-size: 16px; font-weight: 600; }
+.routine-item .r-info p { font-size: 13px; color: var(--text-light); }
+.routine-actions { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+.routine-actions button { padding: 12px 24px; border-radius: 12px; font-size: 16px; font-weight: 600; }
+.move-btn { background: var(--primary); color: white; }
+.check-btn { background: var(--accent); color: white; }
+
+/* OBJECT RECOGNITION */
+.object-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.object-card { background: white; border-radius: var(--radius); padding: 20px; text-align: center; box-shadow: var(--shadow); cursor: pointer; border: 3px solid transparent; transition: all 0.2s; }
+.object-card:active { transform: scale(0.96); }
+.object-card.selected { border-color: var(--primary); background: #E8F5E9; }
+.object-card.correct { border-color: var(--success); background: #E8F5E9; }
+.object-card.wrong { border-color: var(--danger); background: #FFEBEE; }
+.object-card .obj-emoji { font-size: 52px; margin-bottom: 8px; }
+.object-card .obj-name { font-size: 15px; font-weight: 600; }
+.object-prompt { text-align: center; margin-bottom: 20px; }
+.object-prompt .target-emoji { font-size: 72px; }
+.object-prompt .target-name { font-size: 22px; font-weight: 700; color: var(--primary-dark); margin-top: 8px; }
+
+/* ATTENTION FOCUS */
+.attention-display { text-align: center; padding: 30px 0; }
+.attention-number { font-size: 100px; font-weight: 800; color: var(--primary-dark); line-height: 1; }
+.attention-subtitle { font-size: 18px; color: var(--text-light); margin-top: 8px; }
+.attention-input-row { display: flex; gap: 12px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
+.attention-input { width: 64px; height: 64px; border-radius: 12px; border: 3px solid var(--border); font-size: 28px; font-weight: 700; text-align: center; background: white; }
+.attention-input:focus { border-color: var(--primary); outline: none; }
+.attention-btns { display: flex; gap: 12px; justify-content: center; margin-top: 24px; }
+.attention-btns button { padding: 14px 36px; border-radius: 12px; font-size: 18px; font-weight: 700; }
+.submit-btn { background: var(--primary); color: white; }
+.skip-btn { background: var(--border); color: var(--text-light); }
+
+/* EMOTIONAL ENGAGEMENT */
+.emotion-container { text-align: center; }
+.emotion-prompt { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.emotion-scenario { font-size: 16px; color: var(--text); margin-bottom: 24px; background: linear-gradient(135deg, #FDF6EC, #F5EBDA); padding: 20px; border-radius: 14px; border: 1.5px solid var(--accent); line-height: 1.5; }
+.emotion-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.emotion-card { background: white; border-radius: 16px; padding: 20px 8px; text-align: center; box-shadow: var(--shadow); cursor: pointer; border: 3px solid transparent; transition: all 0.2s; }
+.emotion-card:active { transform: scale(0.95); }
+.emotion-card.selected { border-color: var(--primary); background: #E8F5E9; }
+.emotion-card .em-emoji { font-size: 48px; }
+.emotion-card .em-label { font-size: 14px; font-weight: 600; margin-top: 6px; }
+
+/* GAME RESULT */
+.game-result { text-align: center; padding: 40px 20px; }
+.result-icon { font-size: 80px; margin-bottom: 16px; }
+.result-title { font-size: 32px; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px; }
+.result-score { font-size: 18px; color: var(--text-light); margin-bottom: 30px; }
+.result-stars { font-size: 40px; margin-bottom: 24px; }
+.result-actions { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.result-actions button { width: 260px; padding: 16px; border-radius: 14px; font-size: 18px; font-weight: 700; }
+.retry-btn { background: var(--primary); color: white; }
+.home-btn { background: white; color: var(--primary-dark); border: 2px solid var(--primary); }
+
+/* PROGRESS SCREEN */
+.progress-screen { background: var(--bg); padding: 20px; padding-top: 50px; padding-bottom: 80px; overflow-y: auto; flex: 1; }
+.progress-header { font-size: 26px; font-weight: 700; margin-bottom: 20px; color: var(--primary-dark); }
+.progress-card { background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.progress-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+.progress-bar-container { margin-bottom: 12px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; }
+.progress-bar { height: 12px; background: var(--border); border-radius: 6px; overflow: hidden; }
+.progress-bar-fill { height: 100%; border-radius: 6px; transition: width 1s ease; }
+.chart-placeholder { height: 200px; background: linear-gradient(180deg, #E8F5E9 0%, white 100%); border-radius: 12px; position: relative; overflow: hidden; padding: 16px; }
+.chart-svg { width: 100%; height: 100%; }
+.streak-card { background: linear-gradient(160deg, #0B2618 0%, #1B4332 50%, #2D6A4F 100%); color: white; border-radius: var(--radius); padding: 28px 24px; text-align: center; margin-bottom: 16px; position: relative; overflow: hidden; }
+.streak-card::after { content: ''; position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(199,146,62,0.15) 0%, transparent 70%); pointer-events: none; }
+.streak-card .streak-num { font-size: 56px; font-weight: 800; }
+.streak-card .streak-label { font-size: 16px; opacity: 0.9; }
+.weekly-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; }
+.week-day { text-align: center; }
+.week-day .wd-label { font-size: 11px; opacity: 0.7; }
+.week-day .wd-dot { width: 32px; height: 32px; border-radius: 50%; margin: 4px auto; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.wd-dot.done { background: rgba(255,255,255,0.3); }
+.wd-dot.missed { background: rgba(255,255,255,0.1); }
+.wd-dot.today { background: var(--accent); }
+.history-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.history-item:last-child { border-bottom: none; }
+.history-item .h-icon { font-size: 28px; }
+.history-item .h-info { flex:1; }
+.history-item .h-info h4 { font-size: 15px; font-weight: 600; }
+.history-item .h-info p { font-size: 13px; color: var(--text-light); }
+.history-item .h-score { font-size: 18px; font-weight: 700; color: var(--primary); }
+
+/* REMINDERS SCREEN */
+.reminders-screen { background: var(--bg); padding: 20px; padding-top: 50px; padding-bottom: 80px; overflow-y: auto; flex: 1; }
+.reminders-header { font-size: 26px; font-weight: 700; margin-bottom: 20px; color: var(--primary-dark); }
+.reminder-card { background: var(--card); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow); border-left: 5px solid; border: 1px solid var(--border); border-left-width: 5px; }
+.reminder-card.medicine { border-color: var(--danger); }
+.reminder-card.water { border-color: var(--info); }
+.reminder-card.activity { border-color: var(--success); }
+.reminder-card.appointment { border-color: var(--accent); }
+.reminder-card .rem-icon { font-size: 36px; }
+.reminder-card .rem-info { flex:1; }
+.reminder-card .rem-info h4 { font-size: 17px; font-weight: 700; }
+.reminder-card .rem-info p { font-size: 14px; color: var(--text-light); margin-top: 2px; }
+.reminder-card .rem-time { font-size: 16px; font-weight: 700; color: var(--text-light); }
+.reminder-card .rem-toggle { width: 52px; height: 30px; border-radius: 15px; background: var(--border); position: relative; cursor: pointer; transition: background 0.3s; }
+.reminder-card .rem-toggle.on { background: var(--primary); }
+.reminder-card .rem-toggle::after { content: ''; position: absolute; width: 26px; height: 26px; border-radius: 50%; background: white; top: 2px; left: 2px; transition: transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.reminder-card .rem-toggle.on::after { transform: translateX(22px); }
+.add-reminder-btn { width: 100%; padding: 16px; border-radius: 14px; background: white; border: 3px dashed var(--primary); color: var(--primary); font-size: 18px; font-weight: 700; margin-top: 10px; }
+.next-reminder { background: linear-gradient(160deg, #1B4332, #2D6A4F); color: white; border-radius: var(--radius); padding: 24px; margin-bottom: 20px; text-align: center; position: relative; overflow: hidden; }
+.next-reminder::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-light), var(--accent)); }
+.next-reminder .nr-label { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.next-reminder .nr-time { font-size: 40px; font-weight: 800; color: white; letter-spacing: -1px; }
+.next-reminder .nr-desc { font-size: 16px; color: rgba(255,255,255,0.8); }
+.next-reminder .nr-label { font-size: 14px; color: var(--primary-dark); font-weight: 600; }
+.next-reminder .nr-time { font-size: 36px; font-weight: 800; color: var(--primary-dark); }
+.next-reminder .nr-desc { font-size: 16px; color: var(--text-light); }
+
+/* SETTINGS SCREEN */
+.settings-screen { background: var(--bg); padding: 20px; padding-top: 50px; padding-bottom: 80px; overflow-y: auto; flex: 1; }
+.settings-header { font-size: 26px; font-weight: 700; margin-bottom: 20px; color: var(--primary-dark); }
+.settings-group { background: var(--card); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.settings-group-title { font-size: 14px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; padding: 12px 20px 8px; }
+.setting-item { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); gap: 14px; }
+.setting-item:last-child { border-bottom: none; }
+.setting-item .s-icon { font-size: 24px; }
+.setting-item .s-info { flex:1; }
+.setting-item .s-info h4 { font-size: 16px; font-weight: 600; }
+.setting-item .s-info p { font-size: 13px; color: var(--text-light); }
+.setting-item .s-arrow { font-size: 18px; color: var(--text-light); }
+.setting-item .toggle { width: 52px; height: 30px; border-radius: 15px; background: var(--border); position: relative; cursor: pointer; transition: background 0.3s; flex-shrink: 0; }
+.setting-item .toggle.on { background: var(--primary); }
+.setting-item .toggle::after { content:''; position:absolute; width:26px; height:26px; border-radius:50%; background:white; top:2px; left:2px; transition:transform 0.3s; box-shadow:0 2px 4px rgba(0,0,0,0.2); }
+.setting-item .toggle.on::after { transform: translateX(22px); }
+.language-selector { display: flex; gap: 8px; }
+.lang-option { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; border: 2px solid var(--border); background: white; }
+.lang-option.active { border-color: var(--primary); background: #E8F5E9; color: var(--primary-dark); }
+.profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; }
+.logout-btn { width: 100%; padding: 16px; border-radius: 14px; background: var(--danger); color: white; font-size: 18px; font-weight: 700; margin-top: 10px; border: none; transition: opacity 0.2s; }
+.logout-btn:active { opacity: 0.85; }
+
+/* VOICE BUTTON */
+.voice-fab { position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #D4A960); color: white; font-size: 28px; box-shadow: 0 4px 20px rgba(199,146,62,0.35); z-index: 99; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; border: 2px solid rgba(255,255,255,0.2); }
+.voice-fab:active { transform: scale(0.9); }
+.voice-fab.listening { animation: voicePulse 1.5s infinite; }
+@keyframes voicePulse { 0%{box-shadow:0 0 0 0 rgba(255,143,0,0.5)} 70%{box-shadow:0 0 0 20px rgba(255,143,0,0)} 100%{box-shadow:0 0 0 0 rgba(255,143,0,0)} }
+.voice-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.7); z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; }
+.voice-overlay.active { display: flex; }
+.voice-overlay .v-wave { font-size: 60px; animation: voicePulse 1s infinite; }
+.voice-overlay .v-text { font-size: 22px; margin-top: 20px; font-weight: 600; }
+.voice-overlay .v-cancel { margin-top: 30px; padding: 14px 40px; border-radius: 30px; background: rgba(255,255,255,0.2); color: white; font-size: 16px; font-weight: 600; }
+
+/* TOAST */
+.toast { position: fixed; top: 50px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 14px 28px; border-radius: 12px; font-size: 16px; font-weight: 600; z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+
+/* DIFFICULTY INDICATOR */
+.difficulty-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-left: 8px; }
+.difficulty-badge.easy { background: #E8F5E9; color: #2E7D32; }
+.difficulty-badge.medium { background: #FFF3E0; color: #E65100; }
+.difficulty-badge.hard { background: #FFEBEE; color: #C62828; }
+
+/* ACCESSIBILITY */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .memory-card { transition: none; }
+  .voice-fab.listening { animation: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --text-light: #4A3D30; --border: #9E9585; --bg: #F0EBE3; --card: #FFFFFF; }
+  .game-card, .progress-card, .settings-group, .reminder-card { border-width: 2px; border-color: var(--text); }
+  .nav-item.active { font-weight: 800; }
+}
+@media (forced-colors: active) {
+  .toggle, .rem-toggle { border: 2px solid ButtonText; }
+  .game-header { border-bottom: 2px solid CanvasText; }
+}
+</style>
+</head>
+<body>
+<a href="#game-content" class="skip-link" style="position:absolute;top:-100px;left:0;background:var(--primary);color:white;padding:12px 20px;z-index:999;font-size:16px;font-weight:600;text-decoration:none;border-radius:0 0 8px 0;transition:top 0.2s;">Skip to main content</a>
+<style>.skip-link:focus { top: 0; }</style>
+
+<!-- ONBOARDING SCREEN -->
+<div id="screen-onboarding" class="screen onboarding active">
+  <div class="brain-icon">🧠</div>
+  <h1>NER NeuroSmriti</h1>
+  <div class="subtitle">AI-Powered Cognitive Wellness<br>for North East India</div>
+  <div class="lang-grid">
+    <button class="lang-btn selected" onclick="setLang('en')">English</button>
+    <button class="lang-btn" onclick="setLang('as')">অসমীয়া</button>
+    <button class="lang-btn" onclick="setLang('hi')">हिन्दी</button>
+  </div>
+  <button class="start-btn" onclick="goToScreen('screen-profile')">শুৰু কৰক / Start →</button>
+  <div class="mdoner">Supported by MDoNER · Space Technology Theme</div>
+</div>
+
+<!-- PROFILE SETUP -->
+<div id="screen-profile" class="screen profile-setup">
+  <h2>👤 আপোনাৰ তথ্য</h2>
+  <p>Create your profile to get started</p>
+  <div class="profile-form">
+    <div class="form-group">
+      <label>Your Name</label>
+      <input type="text" id="profile-name" placeholder="e.g., Kamala Devi" value="Kamala Devi">
+    </div>
+    <div class="form-group">
+      <label>Age</label>
+      <input type="number" id="profile-age" placeholder="e.g., 72" value="72">
+    </div>
+    <div class="form-group">
+      <label>Caregiver Name</label>
+      <input type="text" id="profile-caregiver" placeholder="e.g., Ravi Kumar" value="Ravi Kumar">
+    </div>
+    <div class="form-group">
+      <label>Caregiver Phone</label>
+      <input type="tel" id="profile-phone" placeholder="e.g., +91 9876543210" value="+91 9876543210">
+    </div>
+    <button class="start-btn" style="width:100%;font-size:20px;padding:16px;" onclick="finishOnboarding()">Continue →</button>
+  </div>
+</div>
+
+<!-- HOME SCREEN -->
+<div id="screen-home" class="screen home">
+  <div class="home-header">
+    <div class="greeting">🙏 Namaskar, <span id="user-name">Kamala Devi</span></div>
+    <div class="date-text" id="date-display"></div>
+    <div class="stats-row">
+      <div class="stat-badge"><strong id="total-score">0</strong>Score</div>
+      <div class="stat-badge"><strong id="total-games">0</strong>Games</div>
+      <div class="stat-badge"><strong id="streak-count">7</strong>Streak 🔥</div>
+    </div>
+  </div>
+
+  <div class="reminder-bar">
+    <div class="r-icon">💊</div>
+    <div class="r-text">
+      <h3>Next: Medicine Reminder</h3>
+      <p>In 30 minutes — Paracetamol 500mg</p>
+    </div>
+  </div>
+
+  <div class="section-title">🎮 Cognitive Games</div>
+  <div class="games-grid">
+    <div class="game-card" role="button" tabindex="0" aria-label="Play Memory Match game" onclick="startGame('memory')" onkeydown="if(event.key==='Enter')startGame('memory')">
+      <div class="game-icon">🃏</div>
+      <div class="game-name">Memory Match</div>
+      <div class="game-desc">Find matching pairs</div>
+      <div class="game-level" id="level-memory">Level 1</div>
+    </div>
+    <div class="game-card" role="button" tabindex="0" aria-label="Play Pattern Recall game" onclick="startGame('pattern')" onkeydown="if(event.key==='Enter')startGame('pattern')">
+      <div class="game-icon">🎯</div>
+      <div class="game-name">Pattern Recall</div>
+      <div class="game-desc">Remember the sequence</div>
+      <div class="game-level" id="level-pattern">Level 1</div>
+    </div>
+    <div class="game-card" role="button" tabindex="0" aria-label="Play Daily Routine game" onclick="startGame('routine')" onkeydown="if(event.key==='Enter')startGame('routine')">
+      <div class="game-icon">📋</div>
+      <div class="game-name">Daily Routine</div>
+      <div class="game-desc">Order your activities</div>
+      <div class="game-level" id="level-routine">Level 1</div>
+    </div>
+    <div class="game-card" role="button" tabindex="0" aria-label="Play Object Recognition game" onclick="startGame('object')" onkeydown="if(event.key==='Enter')startGame('object')">
+      <div class="game-icon">🔍</div>
+      <div class="game-name">Object ID</div>
+      <div class="game-desc">Recognize NER items</div>
+      <div class="game-level" id="level-object">Level 1</div>
+    </div>
+    <div class="game-card" role="button" tabindex="0" aria-label="Play Focus Test game" onclick="startGame('attention')" onkeydown="if(event.key==='Enter')startGame('attention')">
+      <div class="game-icon">🧩</div>
+      <div class="game-name">Focus Test</div>
+      <div class="game-desc">Number concentration</div>
+      <div class="game-level" id="level-attention">Level 1</div>
+    </div>
+    <div class="game-card" role="button" tabindex="0" aria-label="Play Emotion Match game" onclick="startGame('emotion')" onkeydown="if(event.key==='Enter')startGame('emotion')">
+      <div class="game-icon">😊</div>
+      <div class="game-name">Emotion Match</div>
+      <div class="game-desc">Identify feelings</div>
+      <div class="game-level" id="level-emotion">Level 1</div>
+    </div>
+  </div>
+
+  <div class="section-title">⚡ Quick Actions</div>
+  <div class="quick-actions">
+    <div class="quick-action" onclick="switchTab('progress')">
+      <div class="qa-icon">📊</div>
+      <div class="qa-text">My Progress</div>
+    </div>
+    <div class="quick-action" onclick="switchTab('reminders')">
+      <div class="qa-icon">⏰</div>
+      <div class="qa-text">Reminders</div>
+    </div>
+    <div class="quick-action" onclick="switchTab('settings')">
+      <div class="qa-icon">⚙️</div>
+      <div class="qa-text">Settings</div>
+    </div>
+  </div>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- GAME PLAY SCREEN -->
+<div id="screen-gameplay" class="screen gameplay">
+  <div class="game-header">
+    <button class="back-btn" onclick="exitGame()" style="font-size:20px;padding:8px 12px;">✕ Quit</button>
+    <div class="game-title" id="gameplay-title">Memory Match</div>
+    <div class="score-display" id="gameplay-score">0 pts</div>
+  </div>
+  <div class="timer-bar"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
+  <div style="display:flex;justify-content:space-between;padding:4px 20px;font-size:13px;color:var(--text-light);">
+    <span id="round-display">Round 1</span>
+    <span id="level-display"></span>
+  </div>
+  <div class="game-content" id="game-content"></div>
+</div>
+
+<!-- (Result screen removed — games play continuously) -->
+
+<!-- PROGRESS SCREEN -->
+<div id="screen-progress" class="screen progress-screen">
+  <div class="progress-header">📊 My Cognitive Progress</div>
+
+  <div class="streak-card">
+    <div class="streak-num" id="big-streak">7</div>
+    <div class="streak-label">Day Streak — Keep Going! 🔥</div>
+    <div class="weekly-grid">
+      <div class="week-day"><div class="wd-label">Mon</div><div class="wd-dot done">✓</div></div>
+      <div class="week-day"><div class="wd-label">Tue</div><div class="wd-dot done">✓</div></div>
+      <div class="week-day"><div class="wd-label">Wed</div><div class="wd-dot done">✓</div></div>
+      <div class="week-day"><div class="wd-label">Thu</div><div class="wd-dot done">✓</div></div>
+      <div class="week-day"><div class="wd-label">Fri</div><div class="wd-dot done">✓</div></div>
+      <div class="week-day"><div class="wd-label">Sat</div><div class="wd-dot done">✓</div></div>
+      <div class="week-day"><div class="wd-label">Sun</div><div class="wd-dot today">🎯</div></div>
+    </div>
+  </div>
+
+  <div class="progress-card">
+    <h3>🧠 Cognitive Scores</h3>
+    <div class="progress-bar-container">
+      <div class="progress-label"><span>Memory</span><span id="mem-pct">72%</span></div>
+      <div class="progress-bar"><div class="progress-bar-fill" style="width:72%;background:var(--primary)"></div></div>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-label"><span>Attention</span><span id="att-pct">65%</span></div>
+      <div class="progress-bar"><div class="progress-bar-fill" style="width:65%;background:var(--info)"></div></div>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-label"><span>Pattern</span><span id="pat-pct">78%</span></div>
+      <div class="progress-bar"><div class="progress-bar-fill" style="width:78%;background:var(--accent)"></div></div>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-label"><span>Routine</span><span id="rou-pct">80%</span></div>
+      <div class="progress-bar"><div class="progress-bar-fill" style="width:80%;background:var(--success)"></div></div>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-label"><span>Emotional</span><span id="emo-pct">70%</span></div>
+      <div class="progress-bar"><div class="progress-bar-fill" style="width:70%;background:#8E24AA"></div></div>
+    </div>
+  </div>
+
+  <div class="progress-card">
+    <h3>📈 Weekly Trend</h3>
+    <div class="chart-placeholder">
+      <svg class="chart-svg" viewBox="0 0 300 160">
+        <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2E7D32" stop-opacity="0.3"/><stop offset="100%" stop-color="#2E7D32" stop-opacity="0.02"/></linearGradient></defs>
+        <path d="M0,120 L50,100 L100,85 L150,70 L200,55 L250,45 L300,30 L300,160 L0,160Z" fill="url(#cg)"/>
+        <polyline points="0,120 50,100 100,85 150,70 200,55 250,45 300,30" fill="none" stroke="#2E7D32" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="0" cy="120" r="5" fill="#2E7D32"/><circle cx="50" cy="100" r="5" fill="#2E7D32"/>
+        <circle cx="100" cy="85" r="5" fill="#2E7D32"/><circle cx="150" cy="70" r="5" fill="#2E7D32"/>
+        <circle cx="200" cy="55" r="5" fill="#2E7D32"/><circle cx="250" cy="45" r="5" fill="#2E7D32"/>
+        <circle cx="300" cy="30" r="5" fill="#2E7D32"/>
+        <text x="0" y="155" font-size="10" fill="#999">Mon</text>
+        <text x="45" y="155" font-size="10" fill="#999">Tue</text>
+        <text x="95" y="155" font-size="10" fill="#999">Wed</text>
+        <text x="143" y="155" font-size="10" fill="#999">Thu</text>
+        <text x="193" y="155" font-size="10" fill="#999">Fri</text>
+        <text x="243" y="155" font-size="10" fill="#999">Sat</text>
+        <text x="290" y="155" font-size="10" fill="#999">Sun</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="progress-card">
+    <h3>📝 Recent Sessions</h3>
+    <div id="session-history"></div>
+  </div>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- REMINDERS SCREEN -->
+<div id="screen-reminders" class="screen reminders-screen">
+  <div class="reminders-header">⏰ My Reminders</div>
+
+  <div class="next-reminder">
+    <div class="nr-label">NEXT REMINDER IN</div>
+    <div class="nr-time" id="next-rem-time">00:32:15</div>
+    <div class="nr-desc">💊 Paracetamol 500mg</div>
+  </div>
+
+  <div class="reminder-card medicine">
+    <div class="rem-icon">💊</div>
+    <div class="rem-info"><h4>Medicine</h4><p>Paracetamol 500mg — After breakfast</p></div>
+    <div class="rem-time">8:00 AM</div>
+    <div class="rem-toggle on" onclick="toggleReminder(this)"></div>
+  </div>
+  <div class="reminder-card medicine">
+    <div class="rem-icon">💊</div>
+    <div class="rem-info"><h4>Medicine</h4><p>Blood Pressure Tablet</p></div>
+    <div class="rem-time">12:00 PM</div>
+    <div class="rem-toggle on" onclick="toggleReminder(this)"></div>
+  </div>
+  <div class="reminder-card water">
+    <div class="rem-icon">💧</div>
+    <div class="rem-info"><h4>Hydration</h4><p>Drink a glass of water</p></div>
+    <div class="rem-time">Every 2h</div>
+    <div class="rem-toggle on" onclick="toggleReminder(this)"></div>
+  </div>
+  <div class="reminder-card activity">
+    <div class="rem-icon">🚶</div>
+    <div class="rem-info"><h4>Walking</h4><p>Evening walk in the garden</p></div>
+    <div class="rem-time">5:00 PM</div>
+    <div class="rem-toggle on" onclick="toggleReminder(this)"></div>
+  </div>
+  <div class="reminder-card appointment">
+    <div class="rem-icon">🏥</div>
+    <div class="rem-info"><h4>Doctor Visit</h4><p>Dr. Sharma — Neurology checkup</p></div>
+    <div class="rem-time">Thu, 10 AM</div>
+    <div class="rem-toggle on" onclick="toggleReminder(this)"></div>
+  </div>
+  <div class="reminder-card activity">
+    <div class="rem-icon">🧘</div>
+    <div class="rem-info"><h4>Yoga</h4><p>Morning yoga session</p></div>
+    <div class="rem-time">6:30 AM</div>
+    <div class="rem-toggle" onclick="toggleReminder(this)"></div>
+  </div>
+  <button class="add-reminder-btn">+ Add New Reminder</button>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- SETTINGS SCREEN -->
+<div id="screen-settings" class="screen settings-screen">
+  <div class="settings-header">⚙️ Settings</div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">Profile</div>
+    <div class="setting-item">
+      <div class="profile-avatar" id="settings-avatar">KD</div>
+      <div class="s-info"><h4 id="settings-name">Kamala Devi</h4><p>Age 72 · Assamese</p></div>
+      <div class="s-arrow">›</div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">Language / ভাষা</div>
+    <div class="setting-item">
+      <div class="s-icon">🌐</div>
+      <div class="s-info"><h4>App Language</h4></div>
+      <div class="language-selector">
+        <button class="lang-option active" onclick="setSettingsLang(this,'en')">EN</button>
+        <button class="lang-option" onclick="setSettingsLang(this,'as')">অস</button>
+        <button class="lang-option" onclick="setSettingsLang(this,'hi')">हि</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">Accessibility</div>
+    <div class="setting-item">
+      <div class="s-icon">🔊</div>
+      <div class="s-info"><h4>Voice Navigation</h4><p>Speak commands instead of typing</p></div>
+      <div class="toggle on" onclick="toggleSetting(this)"></div>
+    </div>
+    <div class="setting-item">
+      <div class="s-icon">🌙</div>
+      <div class="s-info"><h4>High Contrast Mode</h4><p>Better visibility for elderly users</p></div>
+      <div class="toggle" onclick="toggleSetting(this)"></div>
+    </div>
+    <div class="setting-item">
+      <div class="s-icon">🔤</div>
+      <div class="s-info"><h4>Large Text</h4><p>Increase font size across the app</p></div>
+      <div class="toggle on" onclick="toggleSetting(this)"></div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">Difficulty</div>
+    <div class="setting-item">
+      <div class="s-icon">🎯</div>
+      <div class="s-info"><h4>Auto-Adjust Difficulty</h4><p>AI adapts to your performance</p></div>
+      <div class="toggle on" onclick="toggleSetting(this)"></div>
+    </div>
+    <div class="setting-item">
+      <div class="s-icon">⏱️</div>
+      <div class="s-info"><h4>Game Timer</h4><p>Show timer during games</p></div>
+      <div class="toggle on" onclick="toggleSetting(this)"></div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">Data & Privacy</div>
+    <div class="setting-item">
+      <div class="s-icon">🔒</div>
+      <div class="s-info"><h4>AES-256 Encryption</h4><p>All data encrypted locally</p></div>
+      <div style="font-size:14px;color:var(--success);font-weight:600;">Active ✓</div>
+    </div>
+    <div class="setting-item">
+      <div class="s-icon">☁️</div>
+      <div class="s-info"><h4>Cloud Sync</h4><p>Sync data when connected</p></div>
+      <div class="toggle on" onclick="toggleSetting(this)"></div>
+    </div>
+    <div class="setting-item">
+      <div class="s-icon">📴</div>
+      <div class="s-info"><h4>Offline Mode</h4><p>Works without internet</p></div>
+      <div style="font-size:14px;color:var(--success);font-weight:600;">Ready ✓</div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">Caregiver</div>
+    <div class="setting-item">
+      <div class="s-icon">👤</div>
+      <div class="s-info"><h4>Caregiver Dashboard</h4><p>View progress online</p></div>
+      <div class="s-arrow">›</div>
+    </div>
+    <div class="setting-item">
+      <div class="s-icon">🚨</div>
+      <div class="s-info"><h4>Emergency Alert</h4><p>Notify caregiver instantly</p></div>
+      <div class="s-arrow">›</div>
+    </div>
+  </div>
+
+  <button class="logout-btn" onclick="showToast('Logged out safely')">🚪 Logout</button>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- VOICE BUTTON -->
+<button class="voice-fab" id="voice-fab" onclick="toggleVoice()">🎤</button>
+
+<!-- VOICE OVERLAY -->
+<div class="voice-overlay" id="voice-overlay">
+  <div class="v-wave">🎙️</div>
+  <div class="v-text">Listening...</div>
+  <button class="v-cancel" onclick="stopVoice()">Cancel</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV (hidden during gameplay/onboarding) -->
+<nav class="bottom-nav" id="bottom-nav" style="display:none;" aria-label="Main navigation">
+  <button class="nav-item active" onclick="switchTab('home')" id="nav-home" aria-label="Home" aria-current="page">
+    <div class="nav-icon">🏠</div>Home
+  </button>
+  <button class="nav-item" onclick="switchTab('progress')" id="nav-progress" aria-label="View Progress">
+    <div class="nav-icon">📊</div>Progress
+  </button>
+  <button class="nav-item" onclick="switchTab('reminders')" id="nav-reminders" aria-label="View Reminders">
+    <div class="nav-icon">⏰</div>Reminders
+  </button>
+  <button class="nav-item" onclick="switchTab('settings')" id="nav-settings" aria-label="Open Settings">
+    <div class="nav-icon">⚙️</div>Settings
+  </button>
+</nav>
+
+<script>
+// ==================== STATE ====================
+let currentScreen = 'screen-onboarding';
+let currentLang = 'en';
+let currentGame = null;
+let gameState = {};
+let gameScore = 0;
+let gameLevel = { memory: 1, pattern: 1, routine: 1, object: 1, attention: 1, emotion: 1 };
+let gameHistory = [];
+let timerInterval = null;
+let timeLeft = 60;
+
+// ==================== I18N ====================
+const i18n = {
+  en: { greeting:'Namaskar,', memory:'Memory Match', pattern:'Pattern Recall', routine:'Daily Routine', object:'Object ID', attention:'Focus Test', emotion:'Emotion Match', score:'Score', playAgain:'Play Again', home:'Home', excellent:'Excellent!', goodJob:'Good Try!', keepTrying:'Keep Trying!', findPairs:'Find all matching pairs!', watchPattern:'Watch the pattern carefully!', orderActivities:'Put activities in correct order!', identifyItem:'Identify the NER item shown!', rememberNumber:'Remember the number!', identifyEmotion:'What emotion does this show?', tapToFlip:'Tap a card to flip it', wrong:'Wrong!', correct:'Correct!', tapDots:'Tap the pattern you saw', level:'Level' },
+  as: { greeting:'নমস্কাৰ,', memory:'মেমৰী মেচ', pattern:'পেটাৰ্ন ৰিকল', routine:'দৈনিক কাৰ্য', object:'বস্তু চিনাক্ত', attention:'মনোযোগ পৰীক্ষা', emotion:'আৱেগ মেচ', score:'স্ক'+'োৰ', playAgain:'পুনৰ খেলক', home:'ঘৰ', excellent:'শ্ৰেষ্ঠ!', goodJob:'বহু ভাল!', keepTrying:'চেষ্টা কৰি থাকক!', findPairs:'সকলো জুটি বিচাৰি উলিয়াক!', watchPattern:'পেটাৰ্নটো মনত কৰি ৰাখক!', orderActivities:'কাৰ্যসমূহ সঠিক ক্ৰমত ৰাখক!', identifyItem:'দেখুওৱা NER বস্তুটো চিনাক্ত কৰক!', rememberNumber:'সংখ্যাটো মনত কৰি ৰাখক!', identifyEmotion:'এইটো কেনেকৈ আৱেগ দেখুওৱে?', tapToFlip:'কা'+'ৰ্ড টিপি উলিয়াক', wrong:'ভুল!', correct:'সঠিক!', tapDots:'আপুনি দেখা পেটাৰ্নটো টিপক', level:'স্তৰ' },
+  hi: { greeting:'नमस्कार,', memory:'स्मृति मैच', pattern:'पैटर्न रीकॉल', routine:'दैनिक दिनचर्या', object:'वस्तु पहचान', attention:'ध्यान परीक्षा', emotion:'भावना मैच', score:'स्कोर', playAgain:'फिर से खेलें', home:'होम', excellent:'बहुत बढ़िया!', goodJob:'अच्छा प्रयास!', keepTrying:'प्रयास करते रहें!', findPairs:'सभी मैचिंग जोड़े खोजें!', watchPattern:'पैटर्न ध्यान से देखें!', orderActivities:'गतिविधियों को सही क्रम में रखें!', identifyItem:'दिखाई गई NER वस्तु को पहचानें!', rememberNumber:'संख्या याद रखें!', identifyEmotion:'यह कौन सी भावना दिखाता है?', tapToFlip:'कार्ड पलटने के लिए टैप करें', wrong:'गलत!', correct:'सही!', tapDots:'जो पैटर्न देखा वह टैप करें', level:'स्तर' }
+};
+
+function t(key) { return i18n[currentLang]?.[key] || i18n.en[key]; }
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('selected'));
+  event.target.classList.add('selected');
+}
+
+function setSettingsLang(btn, lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-option').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ==================== NAVIGATION ====================
+function goToScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  currentScreen = id;
+  document.getElementById('bottom-nav').style.display = (['screen-home','screen-progress','screen-reminders','screen-settings'].includes(id)) ? 'flex' : 'none';
+}
+
+function switchTab(tab) {
+  const map = { home:'screen-home', progress:'screen-progress', reminders:'screen-reminders', settings:'screen-settings' };
+  document.querySelectorAll('.nav-item').forEach(n => { n.classList.remove('active'); n.removeAttribute('aria-current'); });
+  const activeNav = document.getElementById('nav-'+tab);
+  activeNav.classList.add('active');
+  activeNav.setAttribute('aria-current', 'page');
+  goToScreen(map[tab]);
+  if(tab === 'home') updateHomeStats();
+  if(tab === 'progress') updateProgress();
+}
+
+function goHome() { switchTab('home'); }
+function finishOnboarding() {
+  const name = document.getElementById('profile-name').value || 'Friend';
+  document.getElementById('user-name').textContent = name;
+  document.getElementById('settings-name').textContent = name;
+  document.getElementById('settings-avatar').textContent = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  updateDateDisplay();
+  goToScreen('screen-home');
+}
+
+function updateDateDisplay() {
+  const d = new Date();
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  document.getElementById('date-display').textContent = d.toLocaleDateString('en-IN', opts);
+}
+
+function updateHomeStats() {
+  const total = gameHistory.reduce((s,h) => s+h.score, 0);
+  document.getElementById('total-score').textContent = total;
+  document.getElementById('total-games').textContent = gameHistory.length;
+  Object.keys(gameLevel).forEach(g => {
+    const el = document.getElementById('level-'+g);
+    if(el) {
+      const lv = gameLevel[g];
+      el.textContent = t('level')+' '+lv+' — '+getDifficultyLabel(lv);
+      el.className = 'game-level l'+lv;
+    }
+  });
+}
+
+// ==================== REMINDERS ====================
+function toggleReminder(el) { el.classList.toggle('on'); showToast(el.classList.contains('on') ? '✅ Reminder ON' : '🔕 Reminder OFF'); }
+function toggleSetting(el) {
+  el.classList.toggle('on');
+  const label = el.closest('.setting-item')?.querySelector('h4')?.textContent || 'Setting';
+  showToast(el.classList.contains('on') ? '✅ '+label+': ON' : '❌ '+label+': OFF');
+}
+
+// Countdown timer
+setInterval(() => {
+  const el = document.getElementById('next-rem-time');
+  if(!el) return;
+  let [h,m,s] = el.textContent.split(':').map(Number);
+  s--; if(s<0){s=59;m--;} if(m<0){m=59;h--;} if(h<0){h=23;}
+  el.textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+},1000);
+
+// ==================== VOICE ====================
+function toggleVoice() {
+  const overlay = document.getElementById('voice-overlay');
+  overlay.classList.toggle('active');
+  document.getElementById('voice-fab').classList.toggle('listening');
+  if(overlay.classList.contains('active')) {
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      document.getElementById('voice-fab').classList.remove('listening');
+      const commands = ['Start Memory Game','Play Pattern Game','Show Progress','Open Reminders'];
+      showToast('🗣️ "'+commands[Math.floor(Math.random()*commands.length)]+'"');
+    }, 3000);
+  }
+}
+function stopVoice() {
+  document.getElementById('voice-overlay').classList.remove('active');
+  document.getElementById('voice-fab').classList.remove('listening');
+}
+
+// ==================== TOAST ====================
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ==================== AI DIFFICULTY ====================
+function getDifficulty(game) {
+  const level = gameLevel[game] || 1;
+  if(level <= 2) return 'easy';
+  if(level <= 4) return 'medium';
+  return 'hard';
+}
+
+function updateDifficulty(game, success) {
+  if(success) {
+    if(gameState.streak === undefined) gameState.streak = 0;
+    gameState.streak++;
+    if(gameState.streak >= 2) { gameLevel[game] = Math.min((gameLevel[game]||1)+1, 5); gameState.streak = 0; showToast('⬆️ Level Up! Now Level '+gameLevel[game]); }
+  } else {
+    gameState.streak = 0;
+    if(gameLevel[game] > 1) gameLevel[game]--;
+  }
+}
+
+function getLevelLabel(level) {
+  const labels = ['','🌱 Beginner','📖 Learning','⚡ Intermediate','🔥 Advanced','🏆 Master'];
+  return labels[level] || labels[5];
+}
+function getLevelColor(level) {
+  const colors = ['','#4CAF50','#FF9800','#2196F3','#E91E63','#9C27B0'];
+  return colors[level] || colors[5];
+}
+function getDifficultyLabel(level) {
+  if(level <= 2) return 'Easy';
+  if(level <= 4) return 'Medium';
+  return 'Hard';
+}
+
+// ==================== GAME TIMER ====================
+function startTimer(seconds) {
+  timeLeft = seconds;
+  const fill = document.getElementById('timer-fill');
+  fill.style.width = '100%';
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    fill.style.width = (timeLeft/seconds*100)+'%';
+    if(timeLeft <= 0) { clearInterval(timerInterval); endGame(false); }
+  }, 1000);
+}
+function stopTimer() { clearInterval(timerInterval); }
+
+// ==================== GAME LAUNCHER ====================
+function startGame(game) {
+  currentGame = game;
+  gameScore = 0;
+  gameState = {};
+  roundCount = 0;
+  consecutiveWins = 0;
+  gameActive = true;
+  goToScreen('screen-gameplay');
+  document.getElementById('gameplay-title').innerHTML = t(game)+' <span style="font-size:14px;opacity:0.8;">'+getLevelLabel(gameLevel[game])+' (Lvl '+gameLevel[game]+')</span>';
+  document.getElementById('gameplay-score').textContent = '0 '+t('score');
+  document.getElementById('round-display').textContent = 'Round '+(roundCount+1);
+  document.getElementById('level-display').textContent = '🔥 '+consecutiveWins+'/2 wins to level up';
+  const content = document.getElementById('game-content');
+  content.innerHTML = '';
+  switch(game) {
+    case 'memory': initMemoryGame(content); break;
+    case 'pattern': initPatternGame(content); break;
+    case 'routine': initRoutineGame(content); break;
+    case 'object': initObjectGame(content); break;
+    case 'attention': initAttentionGame(content); break;
+    case 'emotion': initEmotionGame(content); break;
+  }
+}
+
+function exitGame() {
+  gameActive = false;
+  stopTimer();
+  const lv = gameLevel[currentGame];
+  const totalGameScore = gameHistory.filter(h => h.game === currentGame).reduce((s,h) => s+h.score, 0);
+  showToast('📊 '+roundCount+' rounds | '+totalGameScore+' total pts | Level '+lv);
+  setTimeout(() => switchTab('home'), 800);
+}
+function retryGame() { startGame(currentGame); }
+
+function addScore(pts) {
+  gameScore += pts;
+  document.getElementById('gameplay-score').textContent = gameScore+' '+t('score');
+}
+
+let roundCount = 0;
+let consecutiveWins = 0;
+let gameActive = false;
+
+function endGame(success) {
+  if(!gameActive) return;
+  stopTimer();
+  roundCount++;
+  const lv = gameLevel[currentGame];
+  
+  if(success) {
+    consecutiveWins++;
+    if(consecutiveWins >= 2) {
+      gameLevel[currentGame] = Math.min(lv + 1, 5);
+      consecutiveWins = 0;
+      showLevelUp(currentGame, gameLevel[currentGame]);
+    } else {
+      showRoundFeedback(true, roundCount, consecutiveWins);
+    }
+  } else {
+    consecutiveWins = 0;
+    if(gameLevel[currentGame] > 1) gameLevel[currentGame]--;
+    showRoundFeedback(false, roundCount, 0);
+  }
+  
+  gameHistory.push({ game: currentGame, score: gameScore, date: new Date(), level: gameLevel[currentGame] });
+  updateHomeStats();
+  
+  // Auto-start next round
+  const delay = success ? 1500 : 2000;
+  setTimeout(() => startNextRound(), delay);
+}
+
+function showRoundFeedback(success, round, streak) {
+  const content = document.getElementById('game-content');
+  const emoji = success ? '🎯' : '💪';
+  const msg = success ? t('correct')+'!' : t('keepTrying');
+  const sub = success ? 'Streak: '+streak+'/2 wins to level up' : 'Level may decrease. Try again!';
+  content.innerHTML = `
+    <div style="text-align:center;padding:60px 20px;">
+      <div style="font-size:72px;margin-bottom:16px;">${emoji}</div>
+      <div style="font-size:28px;font-weight:800;color:${success?'var(--success)':'var(--warning)'};margin-bottom:8px;">${msg}</div>
+      <div style="font-size:16px;color:var(--text-light);">Round ${round} complete</div>
+      <div style="font-size:14px;color:var(--text-light);margin-top:4px;">${sub}</div>
+      <div style="font-size:14px;color:var(--text-light);margin-top:16px;">⏳ Next round starting...</div>
+    </div>
+  `;
+}
+
+function startNextRound() {
+  if(!gameActive) return;
+  gameScore = 0;
+  document.getElementById('gameplay-score').textContent = '0 '+t('score');
+  document.getElementById('round-display').textContent = 'Round '+(roundCount+1);
+  const lv = gameLevel[currentGame];
+  document.getElementById('level-display').textContent = '🔥 '+consecutiveWins+'/2 wins to level up';
+  document.getElementById('gameplay-title').innerHTML = t(currentGame)+' <span style="font-size:14px;opacity:0.8;">'+getLevelLabel(lv)+' (Lvl '+lv+')</span>';
+  const content = document.getElementById('game-content');
+  content.innerHTML = '';
+  switch(currentGame) {
+    case 'memory': initMemoryGame(content); break;
+    case 'pattern': initPatternGame(content); break;
+    case 'routine': initRoutineGame(content); break;
+    case 'object': initObjectGame(content); break;
+    case 'attention': initAttentionGame(content); break;
+    case 'emotion': initEmotionGame(content); break;
+  }
+}
+
+function showLevelUp(game, newLevel) {
+  const gameNames = { memory:'Memory Match', pattern:'Pattern Recall', routine:'Daily Routine', object:'Object ID', attention:'Focus Test', emotion:'Emotion Match' };
+  const content = document.getElementById('game-content');
+  content.innerHTML = `
+    <div style="text-align:center;padding:40px 20px;">
+      <div style="font-size:80px;margin-bottom:16px;">🎉</div>
+      <div style="font-size:32px;font-weight:800;color:var(--primary-dark);margin-bottom:8px;">LEVEL UP!</div>
+      <div style="font-size:20px;color:var(--text);margin-bottom:12px;">${gameNames[game]}</div>
+      <div style="display:inline-block;padding:8px 24px;border-radius:30px;font-size:18px;font-weight:700;background:${getLevelColor(newLevel)}22;color:${getLevelColor(newLevel)};border:2px solid ${getLevelColor(newLevel)};">
+        ${getLevelLabel(newLevel)} (Level ${newLevel})
+      </div>
+      <div style="font-size:16px;color:var(--text-light);margin-top:16px;">${getDifficultyLabel(newLevel)} difficulty unlocked!</div>
+      <div style="font-size:14px;color:var(--text-light);margin-top:8px;">Next round starting...</div>
+    </div>
+  `;
+  // Update game header
+  document.getElementById('gameplay-title').innerHTML = t(game)+' <span style="font-size:14px;opacity:0.8;">'+getLevelLabel(newLevel)+' (Lvl '+newLevel+')</span>';
+}
+
+// ==================== MEMORY MATCH GAME ====================
+function initMemoryGame(container) {
+  const level = gameLevel.memory || 1;
+  const pairs = level === 1 ? 3 : level === 2 ? 4 : level === 3 ? 5 : level === 4 ? 6 : 8;
+  const cols = pairs <= 3 ? 3 : pairs <= 5 ? 4 : 4;
+  const emojis = ['🪷','🦏','🐘','🎋','🫖','🎵','🌄','🏕️','🐠','🌺','🍵','🪘'];
+  const chosen = emojis.sort(() => Math.random()-0.5).slice(0, pairs);
+  let cards = [...chosen, ...chosen].sort(() => Math.random()-0.5);
+  gameState.flipped = [];
+  gameState.matched = new Set();
+  gameState.tries = 0;
+
+  container.innerHTML = `
+    <div class="instruction-text" style="font-size:14px;color:var(--text-light);margin-bottom:4px;">Level ${level} — ${getDifficultyLabel(level)} — ${pairs} pairs</div>
+    <div class="instruction-text">${t('tapToFlip')}</div>
+    <div class="memory-grid" style="grid-template-columns:repeat(${cols},1fr);max-width:${cols*90}px;">
+      ${cards.map((e,i) => `<div class="memory-card" data-idx="${i}" data-emoji="${e}" onclick="flipCard(this)"><span class="card-back">❓</span></div>`).join('')}
+    </div>
+  `;
+  gameState.cards = cards;
+  startTimer(30 + pairs*5);
+}
+
+function flipCard(el) {
+  if(el.classList.contains('flipped') || el.classList.contains('matched')) return;
+  if(gameState.flipped.length >= 2) return;
+  el.classList.add('flipped');
+  el.querySelector('.card-back').textContent = el.dataset.emoji;
+  gameState.flipped.push(el);
+  addScore(1);
+  if(gameState.flipped.length === 2) {
+    gameState.tries++;
+    const [a,b] = gameState.flipped;
+    if(a.dataset.emoji === b.dataset.emoji) {
+      a.classList.add('matched');
+      b.classList.add('matched');
+      gameState.matched.add(a.dataset.emoji);
+      addScore(10);
+      showToast(t('correct')+' 🎉');
+      setTimeout(() => { gameState.flipped = []; }, 300);
+      if(gameState.matched.size === gameState.cards.length/2) {
+        setTimeout(() => endGame(true), 500);
+      }
+    } else {
+      showToast(t('wrong'));
+      setTimeout(() => {
+        a.classList.remove('flipped');
+        b.classList.remove('flipped');
+        a.querySelector('.card-back').textContent = '❓';
+        b.querySelector('.card-back').textContent = '❓';
+        gameState.flipped = [];
+      }, 800);
+    }
+  }
+}
+
+// ==================== PATTERN RECOGNITION GAME ====================
+function initPatternGame(container) {
+  const level = gameLevel.pattern || 1;
+  const seqLen = level === 1 ? 3 : level === 2 ? 4 : level === 3 ? 5 : level === 4 ? 7 : 9;
+  const colors = ['red','blue','green','yellow','purple','orange'];
+  const seq = [];
+  for(let i=0;i<seqLen;i++) seq.push(colors[Math.floor(Math.random()*colors.length)]);
+  gameState.patternSeq = seq;
+  gameState.userSeq = [];
+  gameState.phase = 'watch';
+
+  container.innerHTML = `
+    <div class="pattern-container">
+      <div class="instruction-text" style="font-size:14px;color:var(--text-light);margin-bottom:4px;">Level ${level} — ${getDifficultyLabel(level)} — ${seqLen} steps</div>
+      <div class="instruction-text" id="pattern-instr">${t('watchPattern')}</div>
+      <div class="pattern-sequence" id="pattern-dots">
+        ${colors.map(c => `<div class="pattern-dot" id="pd-${c}"></div>`).join('')}
+      </div>
+      <div class="pattern-input" id="pattern-buttons">
+        ${colors.map(c => `<button class="pattern-btn ${c}" data-color="${c}" onclick="tapPatternBtn('${c}')">${c[0].toUpperCase()}</button>`).join('')}
+      </div>
+      <div class="pattern-status" id="pattern-status"></div>
+    </div>
+  `;
+  startTimer(25 + seqLen*5);
+  playPatternSequence();
+}
+
+function playPatternSequence() {
+  const dots = document.querySelectorAll('.pattern-dot');
+  const btns = document.querySelectorAll('.pattern-btn');
+  btns.forEach(b => b.style.pointerEvents = 'none');
+  let i = 0;
+  const interval = setInterval(() => {
+    dots.forEach(d => d.classList.remove('active'));
+    if(i < gameState.patternSeq.length) {
+      document.getElementById('pd-'+gameState.patternSeq[i]).classList.add('active');
+      i++;
+    } else {
+      clearInterval(interval);
+      dots.forEach(d => d.classList.remove('active'));
+      gameState.phase = 'input';
+      gameState.userSeq = [];
+      document.getElementById('pattern-instr').textContent = t('tapDots');
+      btns.forEach(b => b.style.pointerEvents = 'auto');
+    }
+  }, 800);
+}
+
+function tapPatternBtn(color) {
+  if(gameState.phase !== 'input') return;
+  gameState.userSeq.push(color);
+  const idx = gameState.userSeq.length - 1;
+  // Flash the dot
+  const dot = document.getElementById('pd-'+color);
+  dot.classList.add('active');
+  setTimeout(() => dot.classList.remove('active'), 300);
+
+  if(gameState.userSeq[idx] !== gameState.patternSeq[idx]) {
+    dot.classList.add('wrong');
+    setTimeout(() => dot.classList.remove('wrong'), 500);
+    showToast(t('wrong'));
+    addScore(-5);
+    gameState.userSeq = [];
+    document.getElementById('pattern-instr').textContent = t('watchPattern');
+    document.querySelectorAll('.pattern-btn').forEach(b => b.style.pointerEvents = 'none');
+    setTimeout(() => playPatternSequence(), 1500);
+    return;
+  }
+  addScore(5);
+
+  if(gameState.userSeq.length === gameState.patternSeq.length) {
+    showToast(t('correct')+' 🎯');
+    gameState.patternSeq.push(['red','blue','green','yellow','purple','orange'][Math.floor(Math.random()*6)]);
+    setTimeout(() => {
+      document.getElementById('pattern-instr').textContent = t('watchPattern');
+      document.querySelectorAll('.pattern-btn').forEach(b => b.style.pointerEvents = 'none');
+      playPatternSequence();
+    }, 1000);
+  }
+}
+
+// ==================== DAILY ROUTINE GAME ====================
+function initRoutineGame(container) {
+  const level = gameLevel.routine || 1;
+  const allRoutines = [
+    { emoji:'🌅', name:'Wake Up', desc:'6:00 AM — Get out of bed', order:1 },
+    { emoji:'🪥', name:'Brush Teeth', desc:'Morning hygiene routine', order:2 },
+    { emoji:'🫖', name:'Morning Tea', desc:'Assam tea with breakfast', order:3 },
+    { emoji:'💊', name:'Morning Medicine', desc:'Paracetamol 500mg', order:4 },
+    { emoji:'🧘', name:'Yoga/Exercise', desc:'Light stretching', order:5 },
+    { emoji:'🚶', name:'Garden Walk', desc:'Evening walk at 5 PM', order:6 },
+    { emoji:'🍽️', name:'Dinner', desc:'7:30 PM — Light meal', order:7 },
+    { emoji:'😴', name:'Sleep', desc:'9:00 PM — Rest well', order:8 },
+    { emoji:'📰', name:'Read Newspaper', desc:'Morning news at 7 AM', order:9 },
+    { emoji:'🧹', name:'Sweep House', desc:'Morning cleaning', order:10 },
+  ];
+  const routines = allRoutines.slice(0, level === 1 ? 5 : level === 2 ? 6 : level === 3 ? 7 : level === 4 ? 8 : 10);
+  gameState.correctOrder = routines.map(r => r.name);
+  let shuffled = [...routines].sort(() => Math.random()-0.5);
+  gameState.currentOrder = shuffled.map(r => r.name);
+  gameState.selectedIdx = null;
+
+  container.innerHTML = `
+    <div class="instruction-text" style="font-size:14px;color:var(--text-light);margin-bottom:4px;">Level ${level} — ${getDifficultyLabel(level)} — ${routines.length} activities</div>
+    <div class="instruction-text">${t('orderActivities')}</div>
+    <div class="routine-list" id="routine-list">
+      ${shuffled.map((r,i) => `
+        <div class="routine-item" data-idx="${i}" onclick="selectRoutine(${i})">
+          <div class="r-num">${i+1}</div>
+          <div class="r-emoji">${r.emoji}</div>
+          <div class="r-info"><h4>${r.name}</h4><p>${r.desc}</p></div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="routine-actions">
+      <button class="move-btn" onclick="moveRoutine(-1)">⬆️ Move Up</button>
+      <button class="move-btn" onclick="moveRoutine(1)">⬇️ Move Down</button>
+      <button class="check-btn" onclick="checkRoutine()">✅ Check Order</button>
+    </div>
+  `;
+  startTimer(60 + routines.length*5);
+}
+
+function selectRoutine(idx) {
+  gameState.selectedIdx = idx;
+  document.querySelectorAll('.routine-item').forEach((el,i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+}
+
+function moveRoutine(dir) {
+  const idx = gameState.selectedIdx;
+  if(idx === null || idx === undefined) { showToast('Select an item first'); return; }
+  const newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= gameState.currentOrder.length) return;
+  const temp = gameState.currentOrder[idx];
+  gameState.currentOrder[idx] = gameState.currentOrder[newIdx];
+  gameState.currentOrder[newIdx] = temp;
+  gameState.selectedIdx = newIdx;
+  renderRoutineList();
+}
+
+function renderRoutineList() {
+  const list = document.getElementById('routine-list');
+  const allRoutines = [
+    { emoji:'🌅', name:'Wake Up', desc:'6:00 AM' }, { emoji:'🪥', name:'Brush Teeth', desc:'Morning hygiene' },
+    { emoji:'🫖', name:'Morning Tea', desc:'Assam tea' }, { emoji:'💊', name:'Morning Medicine', desc:'Paracetamol' },
+    { emoji:'🧘', name:'Yoga/Exercise', desc:'Light stretching' }, { emoji:'🚶', name:'Garden Walk', desc:'5 PM walk' },
+    { emoji:'🍽️', name:'Dinner', desc:'7:30 PM' }, { emoji:'😴', name:'Sleep', desc:'9:00 PM' },
+    { emoji:'📰', name:'Read Newspaper', desc:'7 AM news' }, { emoji:'🧹', name:'Sweep House', desc:'Morning cleaning' },
+  ];
+  list.innerHTML = gameState.currentOrder.map((name,i) => {
+    const r = allRoutines.find(x => x.name === name);
+    return `<div class="routine-item ${gameState.selectedIdx===i?'selected':''}" data-idx="${i}" onclick="selectRoutine(${i})">
+      <div class="r-num">${i+1}</div><div class="r-emoji">${r.emoji}</div>
+      <div class="r-info"><h4>${r.name}</h4><p>${r.desc}</p></div>
+    </div>`;
+  }).join('');
+}
+
+function checkRoutine() {
+  let correct = 0;
+  gameState.currentOrder.forEach((name,i) => { if(name === gameState.correctOrder[i]) correct++; });
+  const pct = Math.round(correct/gameState.correctOrder.length*100);
+  addScore(correct*10);
+  if(pct === 100) { showToast('🎉 Perfect Order!'); setTimeout(() => endGame(true), 500); }
+  else if(pct >= 60) { showToast('👍 '+correct+'/'+gameState.correctOrder.length+' correct'); }
+  else { showToast('💪 Try again — swap items to fix the order'); }
+}
+
+// ==================== OBJECT RECOGNITION GAME ====================
+function initObjectGame(container) {
+  const level = gameLevel.object || 1;
+  const allObjects = [
+    { emoji:'🦏', name:'One-Horned Rhinoceros', hint:'Assam state animal' },
+    { emoji:'🪷', name:'Lotus', hint:'National flower of India' },
+    { emoji:'🐘', name:'Asian Elephant', hint:'Found in Kaziranga' },
+    { emoji:'🫖', name:'Tea', hint:'Assam is famous for this' },
+    { emoji:'🎋', name:'Bamboo', hint:'Common in NER villages' },
+    { emoji:'🎵', name:'Bihu Dance', hint:'Traditional Assamese dance' },
+    { emoji:'🌺', name:'Rhododendron', hint:'State flower of Nagaland' },
+    { emoji:'🪘', name:'Dhol', hint:'Traditional drum of Assam' },
+    { emoji:'🍵', name:'Green Tea', hint:'Grown in NER hills' },
+    { emoji:'🏔️', name:'Hills', hint:'NER landscape' },
+    { emoji:'🐠', name:'Mahseer Fish', hint:'Found in NER rivers' },
+    { emoji:'🌿', name:'Herbal Medicine', hint:'Traditional NER remedy' },
+  ];
+  const numOptions = level === 1 ? 4 : level === 2 ? 4 : level === 3 ? 5 : level === 4 ? 6 : 6;
+  const showHint = level <= 2;
+  const target = allObjects[Math.floor(Math.random()*allObjects.length)];
+  const others = allObjects.filter(o => o.name !== target.name).sort(() => Math.random()-0.5).slice(0, numOptions-1);
+  const options = [...others, target].sort(() => Math.random()-0.5);
+  gameState.targetObj = target;
+
+  container.innerHTML = `
+    <div class="instruction-text" style="font-size:14px;color:var(--text-light);margin-bottom:4px;">Level ${level} — ${getDifficultyLabel(level)} — ${numOptions} options</div>
+    <div class="object-prompt">
+      <div class="target-emoji">${target.emoji}</div>
+      <div class="object-prompt target-name">${t('identifyItem')}</div>
+      <div style="font-size:15px;color:var(--text-light);margin-top:4px;">${showHint ? target.hint : '🤔 Think carefully...'}</div>
+    </div>
+    <div class="object-grid">
+      ${options.map(o => `
+        <div class="object-card" data-name="${o.name}" onclick="selectObject(this,'${o.name}')">
+          <div class="obj-emoji">${o.emoji}</div>
+          <div class="obj-name">${o.name}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  startTimer(30 + numOptions*5);
+}
+
+function selectObject(el, name) {
+  if(el.classList.contains('correct') || el.classList.contains('wrong')) return;
+  document.querySelectorAll('.object-card').forEach(c => { c.classList.remove('selected'); });
+  const correct = name === gameState.targetObj.name;
+  el.classList.add(correct ? 'correct' : 'wrong');
+  if(correct) {
+    addScore(15);
+    showToast(t('correct')+' 🎉');
+    document.querySelectorAll('.object-card').forEach(c => {
+      if(c.dataset.name === gameState.targetObj.name) c.classList.add('correct');
+    });
+    setTimeout(() => endGame(true), 1000);
+  } else {
+    addScore(-5);
+    showToast(t('wrong')+' — '+gameState.targetObj.name);
+  }
+}
+
+// ==================== ATTENTION & FOCUS GAME ====================
+function initAttentionGame(container) {
+  const level = gameLevel.attention || 1;
+  const digits = level === 1 ? 3 : level === 2 ? 4 : level === 3 ? 5 : level === 4 ? 6 : 8;
+  const num = String(Math.floor(Math.random()*Math.pow(10,digits))).padStart(digits,'0');
+  gameState.attentionNum = num;
+  gameState.attentionPhase = 'show';
+
+  container.innerHTML = `
+    <div class="attention-display">
+      <div class="instruction-text" style="font-size:14px;color:var(--text-light);margin-bottom:4px;">Level ${level} — ${getDifficultyLabel(level)}</div>
+      <div class="instruction-text">${t('rememberNumber')}</div>
+      <div class="attention-number" id="attention-num">${num}</div>
+      <div class="attention-subtitle">${digits} digits</div>
+    </div>
+  `;
+  startTimer(10 + digits*2);
+  setTimeout(() => {
+    document.getElementById('attention-num').textContent = '? ? ?';
+    gameState.attentionPhase = 'input';
+    container.innerHTML = `
+      <div class="attention-display">
+        <div class="instruction-text">Type the number you saw</div>
+        <div class="attention-number">?</div>
+        <div class="attention-input-row">
+          ${num.split('').map((_,i) => `<input class="attention-input" maxlength="1" data-idx="${i}" oninput="onAttentionInput(this,${i})" />`).join('')}
+        </div>
+        <div class="attention-btns" style="margin-top:24px;">
+          <button class="submit-btn" onclick="checkAttention()">✅ Submit</button>
+          <button class="skip-btn" onclick="skipAttention()">⏭️ Skip</button>
+        </div>
+        <div class="pattern-status" id="attention-result"></div>
+      </div>
+    `;
+    document.querySelector('.attention-input').focus();
+  }, 3000 + digits*500);
+}
+
+function onAttentionInput(el, idx) {
+  if(el.value && idx < gameState.attentionNum.length - 1) {
+    const next = document.querySelector(`.attention-input[data-idx="${idx+1}"]`);
+    if(next) next.focus();
+  }
+}
+
+function checkAttention() {
+  const inputs = document.querySelectorAll('.attention-input');
+  let entered = '';
+  inputs.forEach(i => entered += i.value || '_');
+  if(entered === gameState.attentionNum) {
+    addScore(20);
+    showToast(t('correct')+' 🧠');
+    document.getElementById('attention-result').innerHTML = '<span style="color:var(--success);font-weight:700">'+entered+' — Correct! Well done!</span>';
+    setTimeout(() => endGame(true), 1500);
+  } else {
+    addScore(-5);
+    showToast(t('wrong'));
+    document.getElementById('attention-result').innerHTML = '<span style="color:var(--danger);font-weight:700">You entered: '+entered+'<br>The number was: '+gameState.attentionNum+'</span>';
+  }
+}
+
+function skipAttention() { addScore(0); endGame(false); }
+
+// ==================== EMOTIONAL ENGAGEMENT GAME ====================
+function initEmotionGame(container) {
+  const level = gameLevel.emotion || 1;
+  const numOptions = level === 1 ? 4 : level === 2 ? 5 : level === 3 ? 6 : level === 4 ? 8 : 10;
+  const scenarios = [
+    { text:'A grandchild visits after a long time. How would you feel?', correct:'joy', emoji:'😄' },
+    { text:'You forgot where you put your glasses. How do you feel?', correct:'confusion', emoji:'😕' },
+    { text:'Someone helps you cross the road. How do you feel?', correct:'gratitude', emoji:'🙏' },
+    { text:'You see beautiful flowers in the garden. How do you feel?', correct:'happiness', emoji:'😊' },
+    { text:'You hear a song from your youth. How do you feel?', correct:'nostalgia', emoji:'🥹' },
+    { text:'It\'s raining heavily outside. How do you feel?', correct:'calm', emoji:'😌' },
+    { text:'Your medicine tastes bitter. How do you feel?', correct:'discomfort', emoji:'😣' },
+    { text:'A friend calls to check on you. How do you feel?', correct:'love', emoji:'❤️' },
+  ];
+  const emotions = [
+    { id:'joy', emoji:'😄', label:'Joy' }, { id:'sadness', emoji:'😢', label:'Sadness' },
+    { id:'confusion', emoji:'😕', label:'Confusion' }, { id:'gratitude', emoji:'🙏', label:'Gratitude' },
+    { id:'happiness', emoji:'😊', label:'Happiness' }, { id:'anger', emoji:'😠', label:'Anger' },
+    { id:'nostalgia', emoji:'🥹', label:'Nostalgia' }, { id:'calm', emoji:'😌', label:'Calm' },
+    { id:'love', emoji:'❤️', label:'Love' }, { id:'discomfort', emoji:'😣', label:'Discomfort' },
+  ];
+  const scenario = scenarios[Math.floor(Math.random()*scenarios.length)];
+  const uniqueEmotions = [...new Set([scenario.correct, ...emotions.sort(()=>Math.random()-0.5).slice(0,numOptions-1).map(e=>e.id)])];
+  const options = emotions.filter(e => uniqueEmotions.includes(e.id)).sort(() => Math.random()-0.5).slice(0, numOptions);
+  if(!options.find(o => o.id === scenario.correct)) { options[0] = emotions.find(e => e.id === scenario.correct); options.sort(() => Math.random()-0.5); }
+  gameState.emotionScenario = scenario;
+
+  container.innerHTML = `
+    <div class="emotion-container">
+      <div class="instruction-text" style="font-size:14px;color:var(--text-light);margin-bottom:4px;">Level ${level} — ${getDifficultyLabel(level)} — ${options.length} emotions</div>
+      <div class="emotion-prompt">${t('identifyEmotion')}</div>
+      <div class="emotion-scenario">${scenario.text}</div>
+      <div class="emotion-grid">
+        ${options.map(o => `
+          <div class="emotion-card" onclick="selectEmotion(this,'${o.id}')">
+            <div class="em-emoji">${o.emoji}</div>
+            <div class="em-label">${o.label}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="pattern-status" id="emotion-result" style="margin-top:16px;"></div>
+    </div>
+  `;
+  startTimer(45);
+}
+
+function selectEmotion(el, id) {
+  if(el.classList.contains('selected')) return;
+  document.querySelectorAll('.emotion-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const correct = id === gameState.emotionScenario.correct;
+  addScore(correct ? 15 : -5);
+  if(correct) {
+    showToast('😊 '+t('correct')+' — '+gameState.emotionScenario.emoji);
+    document.getElementById('emotion-result').innerHTML = '<span style="color:var(--success);font-weight:700">'+t('correct')+'! '+gameState.emotionScenario.emoji+'</span>';
+    setTimeout(() => endGame(true), 1500);
+  } else {
+    showToast(t('wrong')+' — try to empathize with the situation');
+    document.getElementById('emotion-result').innerHTML = '<span style="color:var(--danger);font-weight:700">'+t('wrong')+' — Think about how the person feels in this situation.</span>';
+  }
+}
+
+// ==================== PROGRESS ====================
+function updateProgress() {
+  const hist = document.getElementById('session-history');
+  if(gameHistory.length === 0) {
+    hist.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-light);">No games played yet. Start playing to see your history!</div>';
+    return;
+  }
+  const icons = { memory:'🃏', pattern:'🎯', routine:'📋', object:'🔍', attention:'🧩', emotion:'😊' };
+  const names = { memory:t('memory'), pattern:t('pattern'), routine:t('routine'), object:t('object'), attention:t('attention'), emotion:t('emotion') };
+  hist.innerHTML = gameHistory.slice(-10).reverse().map(h => {
+    const d = new Date(h.date);
+    const time = d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="history-item">
+      <div class="h-icon">${icons[h.game]}</div>
+      <div class="h-info"><h4>${names[h.game]}</h4><p>${time} · Level ${h.level}</p></div>
+      <div class="h-score">${h.score}</div>
+    </div>`;
+  }).join('');
+}
+
+// ==================== INIT ====================
+updateDateDisplay();
+</script>
+</body>
+</html>
