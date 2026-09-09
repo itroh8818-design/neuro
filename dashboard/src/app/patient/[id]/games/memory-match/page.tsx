@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, RotateCcw, Trophy, Clock, Zap, Star, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, RotateCcw, Trophy, Clock, Zap, Star, Volume2, VolumeX, PartyPopper } from "lucide-react";
 import {
   Sounds,
   DIFFICULTY_LEVELS,
@@ -16,11 +16,53 @@ import {
 } from "@/lib/game-utils";
 import { useLanguage } from "@/lib/language-context";
 
-const EMOJIS = ["🐶", "🐱", "🐸", "🐰", "🦊", "🐻", "🐼", "🐨", "🦁", "🐯", "🐮", "🐷"];
+const NORTHEAST_IMAGES = [
+  {
+    id: "bihu",
+    name: "Bihu dance",
+    imageUrl: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/Bihu_Dance-This_photo_crosses_28000_Views.jpg/500px-Bihu_Dance-This_photo_crosses_28000_Views.jpg",
+  },
+  {
+    id: "rhino",
+    name: "Kaziranga one-horned rhino",
+    imageUrl: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Indian_rhinoceros_in_Kaziranga_National_Park_March_2025_by_Tisha_Mukherjee_02.jpg/500px-Indian_rhinoceros_in_Kaziranga_National_Park_March_2025_by_Tisha_Mukherjee_02.jpg",
+  },
+  {
+    id: "hornbill",
+    name: "Nagaland Hornbill Festival craft",
+    imageUrl: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/Handicraft_of_Nagaland%E2%80%99s_Hornbill_Festival_2019.jpg/500px-Handicraft_of_Nagaland%E2%80%99s_Hornbill_Festival_2019.jpg",
+  },
+  {
+    id: "assam-instrument",
+    name: "Assamese traditional instrument",
+    imageUrl: "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Lahori_Gogona%28Musical_Instruments_of_Assam%29.jpg/500px-Lahori_Gogona%28Musical_Instruments_of_Assam%29.jpg",
+  },
+  {
+    id: "meghalaya-bridge",
+    name: "Meghalaya living root bridge",
+    imageUrl: "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Living_Root_Bridge%2C_Meghalaya%2C_India.jpg/500px-Living_Root_Bridge%2C_Meghalaya%2C_India.jpg",
+  },
+  {
+    id: "nongriat-bridge",
+    name: "Nongriat village root bridge",
+    imageUrl: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Living_root_bridges_of_Nongriat_village_in_East_Khasi_Hills_district%2C_Meghalaya_JEG7387.jpg/500px-Living_root_bridges_of_Nongriat_village_in_East_Khasi_Hills_district%2C_Meghalaya_JEG7387.jpg",
+  },
+  {
+    id: "riwai-bridge",
+    name: "Riwai living root bridge",
+    imageUrl: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Single_Decker_Living_Root_Bridge_at_Riwai.jpg/500px-Single_Decker_Living_Root_Bridge_at_Riwai.jpg",
+  },
+  {
+    id: "assam-drum",
+    name: "Assamese folk instrument",
+    imageUrl: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/%E0%A6%9F%E0%A6%95%E0%A6%BE_%E0%A6%AC%E0%A6%BE%E0%A6%A6%E0%A7%8D%E0%A6%AF.JPG/500px-%E0%A6%9F%E0%A6%95%E0%A6%BE_%E0%A6%AC%E0%A6%BE%E0%A6%A6%E0%A7%8D%E0%A6%AF.JPG",
+  },
+];
 
 interface CardType {
   id: number;
-  emoji: string;
+  imageUrl: string;
+  name: string;
   flipped: boolean;
   matched: boolean;
 }
@@ -35,10 +77,11 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 function generateBoard(pairs: number): CardType[] {
-  const selected = shuffle(EMOJIS).slice(0, pairs);
-  const deck = shuffle([...selected, ...selected].map((emoji, i) => ({
+  const selected = shuffle(NORTHEAST_IMAGES).slice(0, pairs);
+  const deck = shuffle([...selected, ...selected].map((image, i) => ({
     id: i,
-    emoji,
+    imageUrl: image.imageUrl,
+    name: image.name,
     flipped: false,
     matched: false,
   })));
@@ -138,7 +181,7 @@ export default function MemoryMatchPage() {
         const card1 = newCards.find((c) => c.id === first)!;
         const card2 = newCards.find((c) => c.id === second)!;
 
-        if (card1.emoji === card2.emoji) {
+        if (card1.imageUrl === card2.imageUrl) {
           // Match found!
           setComboCount((c) => c + 1);
           setShowCombo(true);
@@ -215,7 +258,7 @@ export default function MemoryMatchPage() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="font-bold text-gray-800">🃏 {t("memoryMatch")}</h1>
+              <h1 className="font-bold text-gray-800">{t("memoryMatch")}</h1>
               <p className="text-xs text-gray-500">{t("matchPairs")}</p>
             </div>
           </div>
@@ -288,7 +331,7 @@ export default function MemoryMatchPage() {
         {showCombo && comboCount >= 2 && (
           <div className="text-center mb-4 animate-bounce">
             <Badge className="bg-yellow-100 text-yellow-700 text-lg px-4 py-2">
-              🔥 {comboCount}x Combo!
+              <Zap className="inline-block mr-1 h-4 w-4" /> {comboCount}x Combo!
             </Badge>
           </div>
         )}
@@ -297,7 +340,7 @@ export default function MemoryMatchPage() {
         {showLevelUp && (
           <Card className="mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 animate-pulse">
             <CardContent className="p-6 text-center">
-              <div className="text-5xl mb-3">🎉</div>
+              <PartyPopper className="mx-auto mb-3 h-12 w-12 text-yellow-100" />
               <h2 className="text-2xl font-bold mb-2">{t("levelUp")}</h2>
               <p className="text-yellow-100">
                 You&apos;ve unlocked <span className="font-bold">{DIFFICULTY_LEVELS[level]?.name}</span> difficulty!
@@ -319,7 +362,7 @@ export default function MemoryMatchPage() {
         {gameOver && (
           <Card className="mb-6 bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0">
             <CardContent className="p-6 text-center">
-              <div className="text-5xl mb-3">🎉</div>
+              <PartyPopper className="mx-auto mb-3 h-12 w-12 text-green-100" />
               <h2 className="text-2xl font-bold mb-2">Congratulations!</h2>
               <p className="text-green-100 mb-1">You matched all pairs!</p>
               <div className="flex items-center justify-center gap-4 mt-3">
@@ -364,7 +407,11 @@ export default function MemoryMatchPage() {
             >
               {card.flipped || card.matched ? (
                 <span className={card.matched ? "grayscale-[30%]" : ""}>
-                  {card.emoji}
+                  <img
+                    src={card.imageUrl}
+                    alt={card.name}
+                    className="h-full w-full rounded-2xl object-cover"
+                  />
                 </span>
               ) : (
                 <span className="text-white text-2xl">?</span>
