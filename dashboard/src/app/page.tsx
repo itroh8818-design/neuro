@@ -53,7 +53,16 @@ export default function LoginPage() {
       router.push("/dashboard");
     } catch (authError) {
       setLoading(false);
-      setError(authError instanceof Error ? authError.message : "Authentication failed.");
+      const code = authError && typeof authError === "object" && "code" in authError
+        ? String(authError.code)
+        : "";
+      setError(
+        code === "auth/invalid-credential"
+          ? "Invalid email or password. Create a caregiver account first, or check your credentials."
+          : authError instanceof Error
+            ? authError.message
+            : "Authentication failed."
+      );
     }
   };
 
