@@ -120,6 +120,8 @@ export const GameEngine: React.FC<GameEngineProps> = ({
     setIsComplete(true);
 
     const accuracy = maxScore > 0 ? (score / maxScore) * 100 : 0;
+    const difficultyBonus = difficulty === 'hard' ? 30 : difficulty === 'medium' ? 20 : 10;
+    const pointsEarned = Math.max(10, Math.round(accuracy) + difficultyBonus);
     const avgResponseTime =
       responseTimes.length > 0
         ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
@@ -138,6 +140,7 @@ export const GameEngine: React.FC<GameEngineProps> = ({
       completed: score >= maxScore * 0.5,
       hintsUsed,
       attempts,
+      pointsEarned,
       createdAt: new Date().toISOString(),
     };
 
@@ -159,6 +162,8 @@ export const GameEngine: React.FC<GameEngineProps> = ({
   if (isComplete) {
     const accuracy = maxScore > 0 ? (score / maxScore) * 100 : 0;
     const isGood = accuracy >= 60;
+    const difficultyBonus = difficulty === 'hard' ? 30 : difficulty === 'medium' ? 20 : 10;
+    const pointsEarned = Math.max(10, Math.round(accuracy) + difficultyBonus);
 
     return (
       <SafeAreaView style={styles.container}>
@@ -181,6 +186,9 @@ export const GameEngine: React.FC<GameEngineProps> = ({
             </LargeText>
             <LargeText size="md" align="center" style={styles.accuracyText}>
               {t('games.score', { score: `${Math.round(accuracy)}%` })}
+            </LargeText>
+            <LargeText size="lg" weight="bold" align="center" style={styles.pointsText}>
+              ⭐ +{pointsEarned} points
             </LargeText>
             <LargeText size="md" align="center" style={styles.timeText}>
               {t('games.playTime', {
@@ -365,6 +373,10 @@ const styles = StyleSheet.create({
   },
   accuracyText: {
     color: colors.textSecondary,
+    marginBottom: spacing.xs,
+  },
+  pointsText: {
+    color: colors.accent,
     marginBottom: spacing.xs,
   },
   timeText: {

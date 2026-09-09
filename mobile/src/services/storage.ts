@@ -11,6 +11,8 @@ import {
   DifficultyState,
   SyncQueueItem,
   GameType,
+  RewardOffer,
+  RewardRedemption,
 } from '../models/types';
 
 let db: SQLite.SQLiteDatabase | null = null;
@@ -53,6 +55,7 @@ const initDatabase = async (database: SQLite.SQLiteDatabase) => {
       completed INTEGER DEFAULT 0,
       hintsUsed INTEGER DEFAULT 0,
       attempts INTEGER DEFAULT 0,
+      pointsEarned INTEGER DEFAULT 0,
       createdAt TEXT NOT NULL,
       FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
     );
@@ -126,6 +129,15 @@ const initDatabase = async (database: SQLite.SQLiteDatabase) => {
       synced INTEGER DEFAULT 0
     );
 
+    CREATE TABLE IF NOT EXISTS reward_redemptions (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      rewardId TEXT NOT NULL,
+      pointsCost INTEGER NOT NULL,
+      redeemedAt TEXT NOT NULL,
+      FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+    );
+
     CREATE INDEX IF NOT EXISTS idx_game_sessions_user
       ON game_sessions(userId, gameType, createdAt);
 
@@ -138,6 +150,12 @@ const initDatabase = async (database: SQLite.SQLiteDatabase) => {
     CREATE INDEX IF NOT EXISTS idx_sync_queue_synced
       ON sync_queue(synced);
   `);
+
+  try {
+    await database.runAsync('ALTER TABLE game_sessions ADD COLUMN pointsEarned INTEGER DEFAULT 0');
+  } catch {
+    // Existing databases already have the points column.
+  }
 };
 
 // User operations
@@ -197,8 +215,8 @@ export const saveGameSession = async (session: GameSession): Promise<void> => {
   const database = await getDatabase();
   await database.runAsync(
     `INSERT INTO game_sessions
-     (id, userId, gameType, difficulty, score, maxScore, accuracy, responseTimeMs, durationMs, completed, hintsUsed, attempts, createdAt)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    (id, userId, gameType, difficulty, score, maxScore, accuracy, responseTimeMs, durationMs, completed, hintsUsed, attempts, pointsEarned, createdAt)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       session.id,
       session.userId,
@@ -212,6 +230,7 @@ export const saveGameSession = async (session: GameSession): Promise<void> => {
       session.completed ? 1 : 0,
       session.hintsUsed,
       session.attempts,
+      session.pointsEarned,
       session.createdAt,
     ]
   );
@@ -249,6 +268,7 @@ export const getGameSessions = async (
     completed: row.completed === 1,
     hintsUsed: row.hintsUsed,
     attempts: row.attempts,
+    pointsEarned: row.pointsEarned || 0,
     createdAt: row.createdAt,
   }));
 };
@@ -465,7 +485,7 @@ export const getWeeklyStats = async (userId: string) => {
   );
 
   const totalSessions = await database.getFirstAsync<any>(
-    `SELECT COUNT(*) as total, SUM(durationMs) as totalDuration
+    `SELECT COUNT(*) as total, SUM(durationMs) as totalDuration, SUM(pointsEarned) as totalPoints
      FROM game_sessions WHERE userId = ? AND createdAt >= ?`,
     [userId, weekAgo.toISOString()]
   );
@@ -474,5 +494,75 @@ export const getWeeklyStats = async (userId: string) => {
     byGame: sessions,
     totalSessions: totalSessions?.total || 0,
     totalDurationMs: totalSessions?.totalDuration || 0,
+    totalPoints: totalSessions?.totalPoints || 0,
   };
+};
+
+export const REWARD_OFFERS: RewardOffer[] = [
+  {
+    id: 'care-plus-10',
+    partner: 'CarePlus Pharmacy',
+    title: '10% off wellness essentials',
+    description: 'Sample partner offer on medicines and daily care products.',
+    pointsCost: 250,
+    couponCode: 'NEURO10',
+  },
+  {
+    id: 'health-cart-150',
+    partner: 'HealthCart',
+    title: '₹150 off your next order',
+    description: 'Sample partner offer on eligible healthcare products.',
+    pointsCost: 500,
+    couponCode: 'SMRITI150',
+  },
+  {
+    id: 'wellness-checkup',
+    partner: 'Wellness Lab',
+    title: '20% off a basic check-up',
+    description: 'Sample partner offer for preventive wellness screening.',
+    pointsCost: 750,
+    couponCode: 'CARE20',
+  },
+];
+
+export const getRewardSummary = async (userId: string) => {
+  const database = await getDatabase();
+  const earned = await database.getFirstAsync<any>(
+    'SELECT COALESCE(SUM(pointsEarned), 0) as total FROM game_sessions WHERE userId = ?',
+    [userId]
+  );
+  const spent = await database.getFirstAsync<any>(
+    'SELECT COALESCE(SUM(pointsCost), 0) as total FROM reward_redemptions WHERE userId = ?',
+    [userId]
+  );
+  const redeemed = await database.getAllAsync<RewardRedemption>(
+    'SELECT id, userId, rewardId, pointsCost, redeemedAt FROM reward_redemptions WHERE userId = ? ORDER BY redeemedAt DESC',
+    [userId]
+  );
+  return {
+    pointsEarned: earned?.total || 0,
+    pointsSpent: spent?.total || 0,
+    balance: Math.max(0, (earned?.total || 0) - (spent?.total || 0)),
+    redeemed,
+  };
+};
+
+export const redeemReward = async (userId: string, reward: RewardOffer): Promise<void> => {
+  const summary = await getRewardSummary(userId);
+  if (summary.balance < reward.pointsCost) throw new Error('Not enough points');
+
+  const redemption: RewardRedemption = {
+    id: `${userId}_${reward.id}_${Date.now()}`,
+    userId,
+    rewardId: reward.id,
+    pointsCost: reward.pointsCost,
+    redeemedAt: new Date().toISOString(),
+  };
+  const database = await getDatabase();
+  await database.runAsync(
+    `INSERT INTO reward_redemptions (id, userId, rewardId, pointsCost, redeemedAt)
+     VALUES (?, ?, ?, ?, ?)`,
+    [redemption.id, redemption.userId, redemption.rewardId, redemption.pointsCost, redemption.redeemedAt]
+  );
+  await addToSyncQueue('reward_redemptions', redemption.id, redemption);
 };

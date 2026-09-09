@@ -24,6 +24,7 @@ import { Progress } from "@/components/ui/progress";import {
   Pill,
   CheckCircle2,
   Star,
+  Gift,
 } from "lucide-react";
 import {
   getAllGameStats,
@@ -32,6 +33,10 @@ import {
   getTotalGamesPlayed,
   formatTimeAgo,
   DIFFICULTY_LEVELS,
+  REWARD_OFFERS,
+  getRewardBalance,
+  getProgressForGame,
+  redeemReward,
   type AllGameStats,
 } from "@/lib/game-utils";
 import { useLanguage } from "@/lib/language-context";
@@ -131,6 +136,15 @@ export default function PatientDashboard() {
 
   const overallScore = gameStats ? getOverallScore(gameStats) : 0;
   const totalGames = gameStats ? getTotalGamesPlayed(gameStats) : 0;
+  const rewardBalance = gameStats ? getRewardBalance(gameStats) : 0;
+
+  const handleRedeem = (rewardId: string) => {
+    const reward = REWARD_OFFERS.find((offer) => offer.id === rewardId);
+    if (!reward) return;
+    if (redeemReward(patientId, reward)) {
+      setGameStats(getAllGameStats(patientId));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
@@ -221,7 +235,9 @@ export default function PatientDashboard() {
 
             <div className="grid sm:grid-cols-2 gap-4">
               {GAMES.map((game) => (
-                <Card
+                (() => {
+                  const progress = gameStats ? getProgressForGame(gameStats, game.id) : null;
+                  return <Card
                   key={game.id}
                   className={`border-0 shadow-md cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg ${
                     selectedGame === game.id ? "ring-2 ring-purple-500" : ""
@@ -236,26 +252,26 @@ export default function PatientDashboard() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold text-gray-800">{t(game.nameKey)}</h3>
-                          {gameStats && (
-                            <Badge className={`text-xs ${DIFFICULTY_LEVELS[Math.min((gameStats[game.id as keyof AllGameStats]?.currentLevel || 1) - 1, 4)].color}`}>
+                          {progress && (
+                            <Badge className={`text-xs ${DIFFICULTY_LEVELS[Math.min((progress.currentLevel || 1) - 1, 4)].color}`}>
                               <Star className="h-3 w-3 mr-0.5" />
-                              {DIFFICULTY_LEVELS[Math.min((gameStats[game.id as keyof AllGameStats]?.currentLevel || 1) - 1, 4)].name}
+                              {DIFFICULTY_LEVELS[Math.min((progress.currentLevel || 1) - 1, 4)].name}
                             </Badge>
                           )}
                         </div>
                         <p className="text-xs text-gray-500 mt-1">{t(game.descKey)}</p>
-                        {gameStats ? (
+                        {progress ? (
                           <div>
                             <div className="flex items-center justify-between mt-3">
                               <div className="flex items-center gap-1 text-sm">
                                 <Trophy className="h-3 w-3 text-yellow-500" />
-                                <span className="font-medium text-gray-700">{getAccuracy(gameStats[game.id as keyof AllGameStats])}%</span>
+                                <span className="font-medium text-gray-700">{getAccuracy(progress)}%</span>
                               </div>
                               <span className="text-xs text-gray-400">
-                                {formatTimeAgo(gameStats[game.id as keyof AllGameStats].lastPlayed)}
+                                {formatTimeAgo(progress.lastPlayed)}
                               </span>
                             </div>
-                            <Progress value={getAccuracy(gameStats[game.id as keyof AllGameStats])} className="mt-2 h-1.5" />
+                            <Progress value={getAccuracy(progress)} className="mt-2 h-1.5" />
                           </div>
                         ) : (
                           <p className="text-xs text-gray-400 mt-3">{t("playGames")}</p>
@@ -263,7 +279,8 @@ export default function PatientDashboard() {
                       </div>
                     </div>
                   </CardContent>
-                </Card>
+                </Card>;
+                })()
               ))}
             </div>
 
@@ -285,6 +302,47 @@ export default function PatientDashboard() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            <Card className="border-0 shadow-md bg-gradient-to-br from-amber-50 to-yellow-50">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Gift className="h-4 w-4 text-amber-600" />
+                  Rewards wallet
+                </CardTitle>
+                <p className="text-2xl font-bold text-amber-700">{rewardBalance} points</p>
+                <p className="text-xs text-gray-500">Earn points by completing games.</p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {REWARD_OFFERS.map((reward) => {
+                  const unlocked = gameStats?.redeemedRewardIds.includes(reward.id);
+                  const canRedeem = !unlocked && rewardBalance >= reward.pointsCost;
+                  return (
+                    <div key={reward.id} className="rounded-lg bg-white/75 p-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-800">{reward.partner}</p>
+                          <p className="text-xs text-gray-600">{reward.title}</p>
+                        </div>
+                        <Badge className="bg-amber-100 text-amber-700">{reward.pointsCost} pts</Badge>
+                      </div>
+                      {unlocked ? (
+                        <p className="mt-2 text-xs font-bold text-green-700">Coupon: {reward.couponCode}</p>
+                      ) : (
+                        <Button
+                          size="sm"
+                          className="mt-3 w-full"
+                          disabled={!canRedeem}
+                          onClick={() => handleRedeem(reward.id)}
+                        >
+                          {canRedeem ? "Unlock coupon" : `Need ${Math.max(0, reward.pointsCost - rewardBalance)} more`}
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-[10px] text-gray-500">Sample partner offers for prototype demonstration.</p>
+              </CardContent>
+            </Card>
+
             {/* Today's Activities */}
             <Card className="border-0 shadow-md">
               <CardHeader className="pb-3">

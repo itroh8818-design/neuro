@@ -28,7 +28,25 @@ export interface GameSession {
   completed: boolean;
   hintsUsed: number;
   attempts: number;
+  pointsEarned: number;
   createdAt: string;
+}
+
+export interface RewardOffer {
+  id: string;
+  partner: string;
+  title: string;
+  description: string;
+  pointsCost: number;
+  couponCode: string;
+}
+
+export interface RewardRedemption {
+  id: string;
+  userId: string;
+  rewardId: string;
+  pointsCost: number;
+  redeemedAt: string;
 }
 
 export type GameType =

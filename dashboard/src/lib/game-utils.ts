@@ -139,7 +139,34 @@ export interface AllGameStats {
   object_recognition: GameProgress;
   attention_focus: GameProgress;
   emotional_engagement: GameProgress;
+  totalPoints: number;
+  redeemedRewardIds: string[];
 }
+
+const GAME_TYPES = [
+  "memory_match",
+  "pattern_recognition",
+  "daily_routine",
+  "object_recognition",
+  "attention_focus",
+  "emotional_engagement",
+] as const;
+type GameTypeKey = (typeof GAME_TYPES)[number];
+
+export interface RewardOffer {
+  id: string;
+  partner: string;
+  title: string;
+  description: string;
+  pointsCost: number;
+  couponCode: string;
+}
+
+export const REWARD_OFFERS: RewardOffer[] = [
+  { id: "care-plus-10", partner: "CarePlus Pharmacy", title: "10% off wellness essentials", description: "Sample partner offer on daily care products.", pointsCost: 250, couponCode: "NEURO10" },
+  { id: "health-cart-150", partner: "HealthCart", title: "₹150 off your next order", description: "Sample partner offer on eligible healthcare products.", pointsCost: 500, couponCode: "SMRITI150" },
+  { id: "wellness-checkup", partner: "Wellness Lab", title: "20% off a basic check-up", description: "Sample partner offer for preventive wellness screening.", pointsCost: 750, couponCode: "CARE20" },
+];
 
 function createDefaultProgress(): GameProgress {
   return {
@@ -154,18 +181,7 @@ function createDefaultProgress(): GameProgress {
   };
 }
 
-export function getAllGameStats(patientId: string): AllGameStats {
-  if (typeof window === "undefined") {
-    return getDefaultAllStats();
-  }
-  try {
-    const stored = localStorage.getItem(`cognicare_stats_${patientId}`);
-    if (stored) return JSON.parse(stored);
-  } catch {}
-  return getDefaultAllStats();
-}
-
-function getDefaultAllStats(): AllGameStats {
+function createDefaultAllStats(): AllGameStats {
   return {
     memory_match: createDefaultProgress(),
     pattern_recognition: createDefaultProgress(),
@@ -173,7 +189,28 @@ function getDefaultAllStats(): AllGameStats {
     object_recognition: createDefaultProgress(),
     attention_focus: createDefaultProgress(),
     emotional_engagement: createDefaultProgress(),
+    totalPoints: 0,
+    redeemedRewardIds: [],
   };
+}
+
+export function getAllGameStats(patientId: string): AllGameStats {
+  if (typeof window === "undefined") {
+    return createDefaultAllStats();
+  }
+  try {
+    const stored = localStorage.getItem(`cognicare_stats_${patientId}`);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return {
+        ...createDefaultAllStats(),
+        ...parsed,
+        totalPoints: parsed.totalPoints || 0,
+        redeemedRewardIds: parsed.redeemedRewardIds || [],
+      };
+    }
+  } catch {}
+  return createDefaultAllStats();
 }
 
 export function saveGameStats(patientId: string, stats: AllGameStats) {
@@ -185,7 +222,11 @@ export function saveGameStats(patientId: string, stats: AllGameStats) {
 
 export function getGameStats(patientId: string, gameType: string): GameProgress {
   const allStats = getAllGameStats(patientId);
-  return allStats[gameType as keyof AllGameStats] || createDefaultProgress();
+  return getProgressForGame(allStats, gameType);
+}
+
+export function getProgressForGame(stats: AllGameStats, gameType: string): GameProgress {
+  return stats[gameType as GameTypeKey] || createDefaultProgress();
 }
 
 export function updateGameStats(
@@ -196,13 +237,15 @@ export function updateGameStats(
   score: number
 ): { newStats: GameProgress; levelUp: boolean } {
   const allStats = getAllGameStats(patientId);
-  const progress = allStats[gameType as keyof AllGameStats] || createDefaultProgress();
+  const progress = getProgressForGame(allStats, gameType);
   
   progress.gamesPlayed += 1;
   progress.totalScore += score;
   progress.totalCorrect += correct;
   progress.totalAttempts += total;
   progress.lastPlayed = new Date().toISOString();
+  const pointsEarned = Math.max(10, Math.round(total > 0 ? (correct / total) * 100 : 0) + 10);
+  allStats.totalPoints += pointsEarned;
   
   const accuracy = total > 0 ? (correct / total) * 100 : 0;
   
@@ -222,10 +265,34 @@ export function updateGameStats(
     progress.bestScores[progress.currentLevel] = score;
   }
   
-  allStats[gameType as keyof AllGameStats] = progress;
+  if (GAME_TYPES.includes(gameType as GameTypeKey)) {
+    allStats[gameType as GameTypeKey] = progress;
+  }
   saveGameStats(patientId, allStats);
   
   return { newStats: progress, levelUp };
+}
+
+export function redeemReward(patientId: string, reward: RewardOffer): boolean {
+  const stats = getAllGameStats(patientId);
+  const spent = stats.redeemedRewardIds.reduce((total, rewardId) => {
+    const redeemed = REWARD_OFFERS.find((offer) => offer.id === rewardId);
+    return total + (redeemed?.pointsCost || 0);
+  }, 0);
+  if (stats.totalPoints - spent < reward.pointsCost || stats.redeemedRewardIds.includes(reward.id)) {
+    return false;
+  }
+  stats.redeemedRewardIds.push(reward.id);
+  saveGameStats(patientId, stats);
+  return true;
+}
+
+export function getRewardBalance(stats: AllGameStats): number {
+  const spent = stats.redeemedRewardIds.reduce((total, rewardId) => {
+    const reward = REWARD_OFFERS.find((offer) => offer.id === rewardId);
+    return total + (reward?.pointsCost || 0);
+  }, 0);
+  return Math.max(0, stats.totalPoints - spent);
 }
 
 // ===== HELPER FUNCTIONS =====
@@ -236,7 +303,7 @@ export function getAccuracy(stats: GameProgress): number {
 }
 
 export function getOverallScore(stats: AllGameStats): number {
-  const games = Object.values(stats);
+  const games = GAME_TYPES.map((gameType) => stats[gameType]);
   const totalCorrect = games.reduce((sum, g) => sum + g.totalCorrect, 0);
   const totalAttempts = games.reduce((sum, g) => sum + g.totalAttempts, 0);
   if (totalAttempts === 0) return 0;
@@ -244,7 +311,7 @@ export function getOverallScore(stats: AllGameStats): number {
 }
 
 export function getTotalGamesPlayed(stats: AllGameStats): number {
-  return Object.values(stats).reduce((sum, g) => sum + g.gamesPlayed, 0);
+  return GAME_TYPES.reduce((sum, gameType) => sum + stats[gameType].gamesPlayed, 0);
 }
 
 export function formatTimeAgo(dateStr: string): string {

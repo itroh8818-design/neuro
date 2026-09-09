@@ -26,6 +26,7 @@ import { HomeScreen } from './src/screens/HomeScreen';
 import { GamesScreen } from './src/screens/GamesScreen';
 import { GamePlayScreen } from './src/screens/GamePlayScreen';
 import { ProgressScreen } from './src/screens/ProgressScreen';
+import { RewardsScreen } from './src/screens/RewardsScreen';
 import { RemindersScreen } from './src/screens/RemindersScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { requestNotificationPermissions } from './src/services/reminders';
@@ -33,7 +34,7 @@ import { setupConnectivityListener, startPeriodicSync } from './src/services/syn
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-type Screen = 'Onboarding' | 'Home' | 'Games' | 'GamePlay' | 'Progress' | 'Reminders' | 'Settings';
+type Screen = 'Onboarding' | 'Home' | 'Games' | 'GamePlay' | 'Progress' | 'Rewards' | 'Reminders' | 'Settings';
 
 function AppContent() {
   const { initializeApp, isLoading, hasCompletedOnboarding } = useAppStore();
@@ -101,6 +102,7 @@ function AppContent() {
       { screen: 'Home' as Screen, icon: '🏠', label: t('home.playGames').split(' ')[0] },
       { screen: 'Games' as Screen, icon: '🎮', label: 'Games' },
       { screen: 'Progress' as Screen, icon: '📊', label: 'Progress' },
+      { screen: 'Rewards' as Screen, icon: '🎁', label: 'Rewards' },
       { screen: 'Reminders' as Screen, icon: '⏰', label: 'Reminders' },
       { screen: 'Settings' as Screen, icon: '⚙️', label: 'Settings' },
     ];
@@ -140,6 +142,8 @@ function AppContent() {
         );
       case 'Progress':
         return <ProgressScreen />;
+      case 'Rewards':
+        return <RewardsScreen />;
       case 'Reminders':
         return <RemindersScreen />;
       case 'Settings':
@@ -154,6 +158,7 @@ function AppContent() {
     Games: t('games.title'),
     GamePlay: '',
     Progress: t('progress.title'),
+    Rewards: 'Rewards',
     Reminders: t('reminders.title'),
     Settings: t('settings.title'),
   };
