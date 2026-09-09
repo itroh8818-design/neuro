@@ -33,6 +33,7 @@ import {
   DIFFICULTY_LEVELS,
   type AllGameStats,
 } from "@/lib/game-utils";
+import { WanderingAlertPanel } from "@/components/WanderingAlertPanel";
 
 export default function DashboardPage() {
   const patients = getMockPatients();
@@ -290,6 +291,8 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               </div>
+
+              <WanderingAlertPanel patient={selected} />
 
               {/* Game Statistics */}
               <Card className="border-0 shadow-sm">
