@@ -4,9 +4,20 @@
  * Mock data functions work without Firebase.
  */
 
-let app: any = null;
-let db: any = null;
-let auth: any = null;
+import { getApps, getApp as getExistingApp, initializeApp, type FirebaseApp } from "firebase/app";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  type Auth,
+  type User,
+} from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
+
+let app: FirebaseApp | null = null;
+let db: Firestore | null = null;
+let auth: Auth | null = null;
 let firebaseReady = false;
 
 function ensureFirebase() {
@@ -22,11 +33,6 @@ function ensureFirebase() {
   }
 
   try {
-    // Dynamic imports so the page never crashes even if firebase SDK has issues
-    const { initializeApp, getApps } = require('firebase/app');
-    const { getFirestore } = require('firebase/firestore');
-    const { getAuth } = require('firebase/auth');
-
     const firebaseConfig = {
       apiKey,
       authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -39,7 +45,7 @@ function ensureFirebase() {
     if (getApps().length === 0) {
       app = initializeApp(firebaseConfig);
     } else {
-      app = getApps()[0];
+      app = getExistingApp();
     }
     db = getFirestore(app);
     auth = getAuth(app);
@@ -55,17 +61,23 @@ export function getDb() { ensureFirebase(); return db; }
 export function getFirebaseAuth() { ensureFirebase(); return auth; }
 
 // Auth helpers
-export const loginWithEmail = async (email: string, password: string) => {
+const requireAuth = (): Auth => {
   const a = getFirebaseAuth();
   if (!a) throw new Error('Firebase not configured — demo mode');
-  const { signInWithEmailAndPassword } = require('firebase/auth');
-  return await signInWithEmailAndPassword(a, email, password);
+  return a;
 };
 
-export const onAuthChange = (callback: (user: any) => void) => {
+export const loginWithEmail = async (email: string, password: string) => {
+  return signInWithEmailAndPassword(requireAuth(), email.trim(), password);
+};
+
+export const signUpWithEmail = async (email: string, password: string) => {
+  return createUserWithEmailAndPassword(requireAuth(), email.trim(), password);
+};
+
+export const onAuthChange = (callback: (user: User | null) => void) => {
   const a = getFirebaseAuth();
   if (!a) return () => {};
-  const { onAuthStateChanged } = require('firebase/auth');
   return onAuthStateChanged(a, callback);
 };
 

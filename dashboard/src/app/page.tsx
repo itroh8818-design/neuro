@@ -10,6 +10,7 @@ import { User, Shield, Heart, Gamepad2, Sparkles, Globe, Check } from "lucide-re
 import { LoadingIndicator } from "@/components/application/loading-indicator/loading-indicator";
 import { useLanguage } from "@/lib/language-context";
 import { LANGUAGES, Language } from "@/lib/translations";
+import { loginWithEmail, signUpWithEmail } from "@/lib/firebase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -17,11 +18,14 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("caretaker");
   const [step, setStep] = useState<"language" | "login">("login");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("neurosmriti_language");
     if (!saved) {
-      setStep("language");
+      const timer = window.setTimeout(() => setStep("language"), 0);
+      return () => window.clearTimeout(timer);
     }
   }, []);
   const router = useRouter();
@@ -34,8 +38,23 @@ export default function LoginPage() {
 
   const handleCaretakerLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    if (!email.trim() || password.length < 6) {
+      setError("Enter a valid email and a password with at least 6 characters.");
+      return;
+    }
     setLoading(true);
-    setTimeout(() => router.push("/dashboard"), 500);
+    try {
+      if (isSignUp) {
+        await signUpWithEmail(email, password);
+      } else {
+        await loginWithEmail(email, password);
+      }
+      router.push("/dashboard");
+    } catch (authError) {
+      setLoading(false);
+      setError(authError instanceof Error ? authError.message : "Authentication failed.");
+    }
   };
 
   const handlePatientLogin = async (patientId: string) => {
@@ -203,19 +222,30 @@ export default function LoginPage() {
                           size="lg"
                         >
                           {loading ? (
-                            t("signingIn")
+                            isSignUp ? "Creating account..." : t("signingIn")
                           ) : (
                             <>
-                              {t("signIn")}
+                              {isSignUp ? "Create account" : t("signIn")}
                               <Sparkles className="ml-2 h-4 w-4" />
                             </>
                           )}
                         </Button>
                       </form>
 
-                      <p className="text-center text-xs text-gray-400 mt-4">
-                        {t("demoHint")}
-                      </p>
+                      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setError("");
+                          setIsSignUp((value) => !value);
+                        }}
+                        className="w-full text-sm font-medium text-teal-700 hover:text-teal-900"
+                      >
+                        {isSignUp ? "Already have an account? Sign in" : "New caregiver? Create an account"}
+                      </button>
+
+                      {!isSignUp && <p className="text-center text-xs text-gray-400 mt-4">{t("demoHint")}</p>}
                     </div>
                   </div>
                 )}

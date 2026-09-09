@@ -2,10 +2,10 @@
  * Voice Service - Bhashini API Integration
  * Handles speech recognition (ASR), text-to-speech (TTS), and voice commands
  */
-import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
-const BHASHINI_API_URL = 'https://api.bhashini.gov.in';
-const BHASHINI_API_KEY = ''; // Set via environment config
+const BHASHINI_API_URL = Constants.expoConfig?.extra?.bhashiniApiUrl || 'https://api.bhashini.gov.in';
+const BHASHINI_API_KEY = Constants.expoConfig?.extra?.bhashiniApiKey as string | undefined;
 
 interface BhashiniResponse {
   output: string;
@@ -19,6 +19,10 @@ export const textToSpeech = async (
   text: string,
   language: string = 'en'
 ): Promise<void> => {
+  if (!BHASHINI_API_KEY) {
+    fallbackTTS(text);
+    return;
+  }
   try {
     // Map language codes to Bhashini format
     const langMap: Record<string, string> = {
@@ -64,6 +68,9 @@ export const speechToText = async (
   audioUri: string,
   language: string = 'en'
 ): Promise<BhashiniResponse> => {
+  if (!BHASHINI_API_KEY) {
+    return { output: '', confidence: 0 };
+  }
   try {
     const langMap: Record<string, string> = {
       en: 'en-IN',

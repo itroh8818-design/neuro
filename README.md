@@ -129,6 +129,23 @@ Difficulty levels: **Easy** → **Medium** → **Hard**
 
 ---
 
+## Local configuration
+
+The dashboard uses Firebase Authentication for caregiver accounts. Copy the
+variable names from `dashboard/.env.example` into `dashboard/.env.local`, create
+the Firebase web app, and enable Email/Password sign-in in the Firebase console.
+
+The mobile app reads `BHASHINI_API_URL` and `BHASHINI_API_KEY` from the Expo
+environment through `mobile/app.config.ts`. Copy `mobile/.env.example` to
+`mobile/.env` and provide the credentials issued for the SIH project. Keys are
+intentionally not committed to this repository.
+
+Without those values, caregiver authentication and Bhashini voice calls fail
+with a clear configuration error or use the device voice fallback; demo data is
+not silently treated as a real account or successful API response.
+
+---
+
 ## 🔒 Security
 
 - AES-256 encryption for all local patient data
