@@ -122,7 +122,7 @@ export const ObjectRecognitionGame: React.FC<ObjectRecognitionGameProps> = ({
             isCorrect === false && { borderColor: colors.incorrect, backgroundColor: '#FFEBEE' },
           ]}
         >
-          <LargeText style={styles.objectEmoji}>{currentObject.emoji}</LargeText>
+          <LargeText style={styles.objectPlaceholder}>?</LargeText>
           <LargeText size="xl" weight="bold" align="center">
             {t('objectRecognition.whatIsThis')}
           </LargeText>
@@ -211,9 +211,10 @@ const styles = StyleSheet.create({
     minHeight: 160,
     justifyContent: 'center',
   },
-  objectEmoji: {
+  objectPlaceholder: {
     fontSize: 80,
     marginBottom: spacing.md,
+    color: colors.textSecondary,
   },
   message: {
     marginBottom: spacing.md,

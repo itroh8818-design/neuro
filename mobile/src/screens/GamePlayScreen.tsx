@@ -26,16 +26,17 @@ interface GamePlayScreenProps {
 
 export const GamePlayScreen: React.FC<GamePlayScreenProps> = ({ route, navigation }) => {
   const { gameType } = route.params;
-  const { currentUser } = useAppStore();
-  const [difficulty, setDifficulty] = useState<DifficultyLevel>('easy');
+  const { currentUser, setDifficulty } = useAppStore();
+  const [difficulty, setLocalDifficulty] = useState<DifficultyLevel>('easy');
 
   useEffect(() => {
     loadDifficulty();
-  }, [gameType]);
+  }, [gameType, currentUser?.id]);
 
   const loadDifficulty = async () => {
     if (!currentUser) return;
     const level = await getCurrentDifficulty(currentUser.id, gameType);
+    setLocalDifficulty(level);
     setDifficulty(level);
   };
 

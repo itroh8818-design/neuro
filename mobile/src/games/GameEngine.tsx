@@ -54,7 +54,7 @@ export const GameEngine: React.FC<GameEngineProps> = ({
   children,
   onGameComplete,
 }) => {
-  const { currentUser } = useAppStore();
+  const { currentUser, setDifficulty } = useAppStore();
   const { t } = useTranslation();
 
   const [score, setScore] = useState(0);
@@ -147,13 +147,14 @@ export const GameEngine: React.FC<GameEngineProps> = ({
     // Save session and update difficulty
     try {
       await saveGameSession(session);
-      await updateDifficulty(session);
+      const updatedState = await updateDifficulty(session);
+      setDifficulty(updatedState.currentLevel);
     } catch (error) {
       console.error('Failed to save session:', error);
     }
 
     onGameComplete?.(session);
-  }, [score, maxScore, responseTimes, currentUser, gameType, difficulty, timeRemaining, hintsUsed, attempts, isComplete]);
+  }, [score, maxScore, responseTimes, currentUser, gameType, difficulty, timeRemaining, hintsUsed, attempts, isComplete, setDifficulty]);
 
   const handleEndGame = () => {
     handleComplete();

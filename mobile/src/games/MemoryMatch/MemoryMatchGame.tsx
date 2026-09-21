@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   Dimensions,
   Animated,
-  Image,
 } from 'react-native';
 import { LargeText } from '../../components/ui/LargeText';
 import { colors, spacing, borderRadius } from '../../config/theme';
@@ -22,42 +21,42 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const NER_CULTURAL_ITEMS = [
   {
     id: 'bihu',
-    imageUri: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/Bihu_Dance-This_photo_crosses_28000_Views.jpg/500px-Bihu_Dance-This_photo_crosses_28000_Views.jpg',
+    emoji: '💃',
     nameKey: 'bihu_dancer',
   },
   {
     id: 'rhino',
-    imageUri: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Indian_rhinoceros_in_Kaziranga_National_Park_March_2025_by_Tisha_Mukherjee_02.jpg/500px-Indian_rhinoceros_in_Kaziranga_National_Park_March_2025_by_Tisha_Mukherjee_02.jpg',
+    emoji: '🦏',
     nameKey: 'one_horned_rhino',
   },
   {
     id: 'hornbill',
-    imageUri: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/Handicraft_of_Nagaland%E2%80%99s_Hornbill_Festival_2019.jpg/500px-Handicraft_of_Nagaland%E2%80%99s_Hornbill_Festival_2019.jpg',
+    emoji: '🦅',
     nameKey: 'hornbill_bird',
   },
   {
     id: 'instrument',
-    imageUri: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Lahori_Gogona%28Musical_Instruments_of_Assam%29.jpg/500px-Lahori_Gogona%28Musical_Instruments_of_Assam%29.jpg',
+    emoji: '🥁',
     nameKey: 'traditional_drum',
   },
   {
     id: 'root_bridge',
-    imageUri: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Living_Root_Bridge%2C_Meghalaya%2C_India.jpg/500px-Living_Root_Bridge%2C_Meghalaya%2C_India.jpg',
+    emoji: '🌉',
     nameKey: 'mountain',
   },
   {
     id: 'root_bridge_village',
-    imageUri: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Living_root_bridges_of_Nongriat_village_in_East_Khasi_Hills_district%2C_Meghalaya_JEG7387.jpg/500px-Living_root_bridges_of_Nongriat_village_in_East_Khasi_Hills_district%2C_Meghalaya_JEG7387.jpg',
+    emoji: '🌊',
     nameKey: 'river',
   },
   {
     id: 'root_bridge_riwai',
-    imageUri: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Single_Decker_Living_Root_Bridge_at_Riwai.jpg/500px-Single_Decker_Living_Root_Bridge_at_Riwai.jpg',
+    emoji: '🌿',
     nameKey: 'bamboo',
   },
   {
     id: 'assam_instrument',
-    imageUri: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/%E0%A6%9F%E0%A6%95%E0%A6%BE_%E0%A6%AC%E0%A6%BE%E0%A6%A6%E0%A7%8D%E0%A6%AF.JPG/500px-%E0%A6%9F%E0%A6%95%E0%A6%BE_%E0%A6%AC%E0%A6%BE%E0%A6%A6%E0%A7%8D%E0%A6%AF.JPG',
+    emoji: '🎶',
     nameKey: 'traditional_drum',
   },
 ];
@@ -65,7 +64,7 @@ const NER_CULTURAL_ITEMS = [
 interface Card {
   id: string;
   pairId: string;
-  imageUri: string;
+  emoji: string;
   nameKey: string;
   isFlipped: boolean;
   isMatched: boolean;
@@ -235,21 +234,15 @@ interface MemoryCardProps {
 
 const MemoryCard: React.FC<MemoryCardProps> = ({ card, size, onPress }) => {
   const flipAnim = React.useRef(new Animated.Value(0)).current;
-  const [showFront, setShowFront] = useState(card.isFlipped || card.isMatched);
+  const isFaceVisible = card.isFlipped || card.isMatched;
 
   useEffect(() => {
     Animated.spring(flipAnim, {
-      toValue: card.isFlipped || card.isMatched ? 1 : 0,
+      toValue: isFaceVisible ? 1 : 0,
       friction: 8,
       useNativeDriver: true,
     }).start();
-
-    if (card.isFlipped || card.isMatched) {
-      setShowFront(true);
-    } else {
-      setTimeout(() => setShowFront(false), 200);
-    }
-  }, [card.isFlipped, card.isMatched]);
+  }, [flipAnim, isFaceVisible]);
 
   const rotateY = flipAnim.interpolate({
     inputRange: [0, 1],
@@ -270,21 +263,17 @@ const MemoryCard: React.FC<MemoryCardProps> = ({ card, size, onPress }) => {
             transform: [{ rotateY }],
             backgroundColor: card.isMatched
               ? colors.success
-              : card.isFlipped || showFront
+              : isFaceVisible
               ? colors.surface
               : colors.cardBack,
           },
         ]}
       >
-        {(card.isFlipped || card.isMatched || showFront) && (
-          <Image
-            source={{ uri: card.imageUri }}
-            style={[styles.cardImage, { width: size, height: size }]}
-            resizeMode="cover"
-            accessibilityLabel={card.nameKey}
-          />
-        )}
-        {!card.isFlipped && !card.isMatched && !showFront && (
+        {isFaceVisible ? (
+          <LargeText size="lg" style={styles.cardEmoji} accessibilityLabel={card.nameKey}>
+            {card.emoji}
+          </LargeText>
+        ) : (
           <LargeText size="xl" weight="bold" style={{ color: colors.textLight }}>?</LargeText>
         )}
       </Animated.View>
@@ -330,8 +319,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: borderRadius.md,
   },
-  cardImage: {
-    borderRadius: borderRadius.md,
+  cardEmoji: {
+    fontSize: 40,
+    textAlign: 'center',
   },
   pairsText: {
     color: colors.textSecondary,
